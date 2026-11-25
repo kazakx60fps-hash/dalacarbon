@@ -21,6 +21,7 @@ from . import db  # noqa: E402
 from datetime import timedelta  # noqa: E402
 
 from .auth import bp as auth_bp  # noqa: E402
+from .google_auth import init_google  # noqa: E402
 from .main import bp as main_bp  # noqa: E402
 from .security import add_security_headers, csrf_token  # noqa: E402
 
@@ -82,6 +83,9 @@ def create_app(test_config: dict | None = None) -> Flask:
         SESSION_COOKIE_SAMESITE="Lax",
         MAX_CONTENT_LENGTH=64 * 1024,
         PERMANENT_SESSION_LIFETIME=timedelta(days=30),  # «Мені есте сақта»
+        GOOGLE_CLIENT_ID=os.environ.get("GOOGLE_CLIENT_ID", ""),
+        GOOGLE_CLIENT_SECRET=os.environ.get("GOOGLE_CLIENT_SECRET", ""),
+        GOOGLE_REDIRECT_URI=os.environ.get("GOOGLE_REDIRECT_URI", ""),
     )
     if test_config:
         app.config.update(test_config)
@@ -91,8 +95,14 @@ def create_app(test_config: dict | None = None) -> Flask:
     db.init_app(app)
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
+    init_google(app)
     app.after_request(add_security_headers)
-    app.jinja_env.globals.update(csrf_token=csrf_token, parcel_cells=_parcel_cells(), qr_path=_qr_path())
+    app.jinja_env.globals.update(
+        csrf_token=csrf_token,
+        parcel_cells=_parcel_cells(),
+        qr_path=_qr_path(),
+        google_enabled=app.config["GOOGLE_ENABLED"],
+    )
     _register_error_pages(app)
 
     @app.get("/favicon.ico")

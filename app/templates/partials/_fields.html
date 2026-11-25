@@ -8,6 +8,7 @@
 {%- endmacro %}
 
 {% macro text_field(name, label, value='', error=None, type='text', required=True, autocomplete=None, hint=None, placeholder=None, maxlength=None, autofocus=False, inputmode=None) -%}
+{%- if value is none %}{% set value = '' %}{% endif -%}
 <div class="field{% if error %} field--invalid{% endif %}">
   <label class="field__label" for="{{ name }}">{{ label }}{% if required %} <span class="req" aria-hidden="true">*</span>{% endif %}</label>
   <input class="input" id="{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ value }}"

@@ -1,0 +1,41 @@
+{# Пилоттық алқаптың NDVI картасы (SVG): спутник түсірілімі стиліндегі егістік фоны + 4 учаске.
+   Figma-дағы растр сурет жүктелмегендіктен, фон SVG арқылы салынған. #}
+<svg viewBox="0 0 600 260" width="600" height="260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <pattern id="rows-a" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-8)">
+      <path d="M0 3h6" stroke="rgba(0,0,0,.18)" stroke-width="1.4"/>
+    </pattern>
+    <pattern id="rows-b" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(74)">
+      <path d="M0 2.5h5" stroke="rgba(0,0,0,.16)" stroke-width="1.2"/>
+    </pattern>
+    <pattern id="rows-c" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(32)">
+      <path d="M0 3.5h7" stroke="rgba(255,255,255,.06)" stroke-width="1.6"/>
+    </pattern>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+      <stop offset=".6" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".35"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Айналадағы егістіктер -->
+  <rect width="600" height="260" fill="#45603A"/>
+  <path d="M0 0 H230 L180 70 L0 96Z" fill="#567343"/>
+  <path d="M230 0 H600 V40 L470 30 L392 15 L250 25Z" fill="#3D5A33"/>
+  <path d="M0 96 L180 70 L150 200 L0 230Z" fill="#5E6E3C"/>
+  <path d="M0 230 L150 200 L245 241 L260 260 H0Z" fill="#6E6A40"/>
+  <path d="M522 52 L600 40 V260 H430 L482 164Z" fill="#4B6838"/>
+  <path d="M245 241 L430 241 L420 260 H260Z" fill="#5A7040"/>
+  <rect width="600" height="260" fill="url(#rows-a)"/>
+  <path d="M0 96 L180 70 L150 200 L0 230Z" fill="url(#rows-b)"/>
+  <path d="M522 52 L600 40 V260 H430 L482 164Z" fill="url(#rows-c)"/>
+  <path d="M0 132 C120 120 220 96 600 120" stroke="rgba(214,200,150,.35)" stroke-width="2" fill="none"/>
+
+  <!-- Учаскелер (NDVI) -->
+  <g stroke="rgba(255,255,255,.88)" stroke-width="2" stroke-linejoin="round">
+    <path d="M107 37 L392 15 L359 139 L268 160 L150 200Z" fill="rgba(120,196,126,.62)"/>
+    <path d="M392 15 L522 52 L482 164 L359 139Z" fill="rgba(168,214,156,.55)"/>
+    <path d="M107 37 L150 200 L245 241 L138 241Z" fill="rgba(104,148,74,.55)"/>
+    <path d="M150 200 L268 160 L359 139 L482 164 L430 241 L245 241Z" fill="rgba(206,182,92,.58)"/>
+  </g>
+  <rect width="600" height="260" fill="url(#vignette)"/>
+</svg>

@@ -34,9 +34,10 @@ def login(client, **form):
 
 def test_login_page_renders(client):
     html = client.get("/login").get_data(as_text=True)
-    assert "Даламызға қайта қош келдіңіз" in html
+    assert "Қош келдіңіз!" in html
     assert 'name="login"' in html and 'type="password"' in html
-    assert "QR-код арқылы кіру" in html
+    assert 'id="intro"' in html and "Анимацияны өткізу" in html  # Figma: анимациялы интро
+    assert "Алқаптардың" in html and "Пилоттық алқап" in html
 
 
 def test_success_page_prefills_login(client, registered):
@@ -57,9 +58,11 @@ def test_correct_credentials_open_dashboard(client, registered):
     assert res.status_code == 303
     assert res.headers["Location"].endswith("/dashboard")
     page = client.get("/dashboard").get_data(as_text=True)
-    assert "Қош келдіңіз, «Жасыл Дала» ШҚ!" in page
+    assert "Басқару тақтасы" in page
+    assert "«Жасыл Дала» ШҚ" in page
     assert "Ақмола облысы" in page
-    assert "$38 250" in page  # жоба құжатындағы пилоттық сценарий
+    assert "$38 250" in page and "$10,20" in page  # жоба құжатындағы пилоттық сценарий
+    assert 'id="ndvi"' in page and 'id="income"' in page
 
 
 @pytest.mark.parametrize("identifier", ["JASYL_DALA", "Info@Example.kz"])

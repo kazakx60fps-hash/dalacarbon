@@ -1,85 +1,130 @@
 {% extends "base.html" %}
 
 {% block title %}Басқару тақтасы — DalaCarbon AI{% endblock %}
-{% block body_class %}is-dash{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/app2.css') }}">{% endblock %}
+{% block body_class %}is-dash2{% endblock %}
+{% block scene %}<div class="bg-topo bg-topo--calm" aria-hidden="true"></div>{% endblock %}
+{% block header %}{% endblock %}
 
-{% block topbar_action %}
-<div class="userbar">
-  <span class="userbar__avatar" aria-hidden="true">{{ initials }}</span>
-  <span class="userbar__who">
-    <span class="userbar__name">{{ display_name }}</span>
-    <span class="userbar__login">@{{ username }}</span>
-  </span>
-  <form method="post" action="{{ url_for('auth.logout') }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button type="submit" class="topbar__link">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-      Шығу
-    </button>
-  </form>
+{% block main %}
+<div class="dash2" id="dash2">
+  <aside class="side" aria-label="Негізгі мәзір">
+    <div class="side__top">
+      <a class="brand side__brand" href="{{ url_for('main.dashboard') }}" aria-label="DalaCarbon AI — басқару тақтасы">
+        <img class="brand__mark" src="{{ url_for('static', filename='img/mark-cream.svg') }}" alt="" width="32" height="32">
+        <span class="brand__name">DalaCarbon <span class="brand__ai">AI</span></span>
+      </a>
+      <button type="button" class="side__collapse" id="side-collapse" aria-controls="dash2" aria-expanded="true" aria-label="Мәзірді жию" title="Мәзірді жию">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>
+      </button>
+    </div>
+
+    <nav class="side__nav">
+      <a class="side__link is-active" href="#overview" aria-current="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+        <span class="side__label">Шолу</span>
+      </a>
+      <a class="side__link" href="#ndvi">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>
+        <span class="side__label">NDVI картасы</span>
+      </a>
+      <a class="side__link" href="#income">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19h16"/><path d="M5 15l4-4 3 3 6-7"/><path d="M14 7h4v4"/></svg>
+        <span class="side__label">Табыс есебі</span>
+      </a>
+    </nav>
+
+    <form class="side__bottom" method="post" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="side__link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        <span class="side__label">Шығу</span>
+      </button>
+    </form>
+  </aside>
+
+  <main class="dash2__main" id="overview">
+    <header class="dash2__top">
+      <span class="chip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        2026 маусымы
+      </span>
+      <span class="user-chip">
+        <span class="user-chip__avatar" aria-hidden="true">{{ initials }}</span>
+        <span>{{ display_name }}</span>
+      </span>
+    </header>
+
+    <div class="dash2__title-row">
+      <div>
+        <h1>Басқару тақтасы</h1>
+        <p class="dash2__meta">{{ region }} · {{ farm_type }}</p>
+      </div>
+      <span class="badge">Демо деректер</span>
+    </div>
+
+    <section class="kpis2" aria-label="Негізгі көрсеткіштер">
+      <article class="kpi2">
+        <span class="kpi2__label">Пилоттық алаң</span>
+        <span class="kpi2__value">{{ n.area }} <small>га</small></span>
+        <span class="kpi2__note">Базалық сценарий</span>
+      </article>
+      <article class="kpi2">
+        <span class="kpi2__label">Таза секвестрация</span>
+        <span class="kpi2__value">{{ n.net_total }} <small>т CO₂e / жыл</small></span>
+        <span class="kpi2__note">15% буферден кейін</span>
+      </article>
+      <article class="kpi2">
+        <span class="kpi2__label">Фермер табысы</span>
+        <span class="kpi2__value">{{ n.farmer_total }} <small>/ жыл</small></span>
+        <span class="kpi2__note">Түсімнің 75%-ы</span>
+      </article>
+      <article class="kpi2">
+        <span class="kpi2__label">Кредит бағасы</span>
+        <span class="kpi2__value">{{ n.price }} <small>/ т CO₂e</small></span>
+        <span class="kpi2__note">Сценарийлер: $12 · $16 · $22</span>
+      </article>
+    </section>
+
+    <section class="dash2__grid">
+      <article class="panel2" id="ndvi">
+        <div class="panel2__head">
+          <div><h2>NDVI картасы</h2><p>Пилоттық алқап · Үлгі</p></div>
+          <span class="badge badge--sm">NDVI</span>
+        </div>
+        <div class="map" role="img" aria-label="Пилоттық алқаптың NDVI картасы: төрт учаске, үлгі визуализация">
+          {% include "partials/_ndvi_map.svg" %}
+        </div>
+        <div class="legend2"><span>Сирек өсімдік</span><span class="legend2__bar" aria-hidden="true"></span><span>Қалың өсімдік</span></div>
+      </article>
+
+      <article class="panel2" id="income">
+        <div class="panel2__head">
+          <div><h2>1 гектардан түсетін табыс</h2><p>15% буфер шегерілген</p></div>
+        </div>
+        <div class="donut" role="img" aria-label="Табыс бөлінісі: фермерге 75 пайыз, DalaCarbon AI-ға 25 пайыз">
+          <svg viewBox="0 0 140 140" width="140" height="140" aria-hidden="true">
+            <circle cx="70" cy="70" r="54" fill="none" stroke="rgba(244,241,234,.06)" stroke-width="14"/>
+            <circle class="donut__farmer" cx="70" cy="70" r="54" fill="none" stroke-width="14" stroke-linecap="round"
+              stroke-dasharray="238 101.3" stroke-dashoffset="-4" transform="rotate(-90 70 70)"/>
+            <circle class="donut__platform" cx="70" cy="70" r="54" fill="none" stroke-width="14" stroke-linecap="round"
+              stroke-dasharray="65 274.3" stroke-dashoffset="-263" transform="rotate(-90 70 70)"/>
+          </svg>
+          <span class="donut__center"><strong>{{ n.revenue_per_ha }}</strong><small>/ га / жыл</small></span>
+        </div>
+        <ul class="split-list">
+          <li><span><i class="dot dot--mint" aria-hidden="true"></i>Фермер · 75%</span><strong>{{ n.farmer_per_ha }}</strong></li>
+          <li><span><i class="dot dot--gold" aria-hidden="true"></i>DalaCarbon AI · 25%</span><strong>{{ n.platform_per_ha }}</strong></li>
+        </ul>
+        <p class="panel2__foot">{{ n.net_per_ha }} т CO₂e × {{ n.price }}</p>
+      </article>
+    </section>
+
+    <p class="dash2__method">Әдістеме: Verra VM0042 / VT0014 · RothC + ML</p>
+  </main>
 </div>
 {% endblock %}
 
-{% block content %}
-<div class="dash">
-  <header class="dash__head">
-    <span class="eyebrow">Басқару тақтасы · 2026 маусымы</span>
-    <h1>Қош келдіңіз, {{ display_name }}!</h1>
-    <p class="dash__meta">{{ region }} · {{ farm_type }}</p>
-  </header>
-
-  <p class="notice notice--inline">
-    Демо деректер: жоба құжатындағы базалық пилоттық сценарий ({{ n.area }} га, {{ n.price }}/т CO₂e). Нақты алқаптарыңыз қосылғанда ауыстырылады.
-  </p>
-
-  <section class="kpis" aria-label="Негізгі көрсеткіштер">
-    <article class="panel kpi">
-      <span class="kpi__label">Пилоттық алаң</span>
-      <span class="kpi__value">{{ n.area }} <small>га</small></span>
-      <span class="kpi__note">Базалық сценарий</span>
-    </article>
-    <article class="panel kpi">
-      <span class="kpi__label">Таза секвестрация</span>
-      <span class="kpi__value">{{ n.net_total }} <small>т CO₂e / жыл</small></span>
-      <span class="kpi__note">0,75 т/га, 15% буфер шегерілген</span>
-    </article>
-    <article class="panel kpi">
-      <span class="kpi__label">Фермер табысы</span>
-      <span class="kpi__value">{{ n.farmer_total }} <small>/ жыл</small></span>
-      <span class="kpi__note">Кредит табысының 75%-ы</span>
-    </article>
-    <article class="panel kpi">
-      <span class="kpi__label">Кредит бағасы</span>
-      <span class="kpi__value">{{ n.price }} <small>/ т CO₂e</small></span>
-      <span class="kpi__note">Сценарийлер: $12 · $16 · $22</span>
-    </article>
-  </section>
-
-  <section class="dash__grid">
-    <article class="panel">
-      <div class="panel__head">
-        <h2>Пилоттық алқап · NDVI картасы</h2>
-        <span class="mono">SENTINEL-2 L2A · 10 М</span>
-      </div>
-      <div class="ndvi" role="img" aria-label="Алқаптың NDVI жылулық картасы, үлгі визуализация">
-        {% for level in ndvi %}<span class="parcel__cell--{{ level }}"></span>{% endfor %}
-      </div>
-      <div class="legend"><span>Жалаңаш топырақ</span><span class="legend__ramp" aria-hidden="true"></span><span>Қалың өсімдік</span></div>
-    </article>
-
-    <article class="panel">
-      <div class="panel__head"><h2>1 гектардан түсетін табыс</h2></div>
-      <span class="kpi__value kpi__value--xl">{{ n.revenue_per_ha }} <small>/ га / жыл</small></span>
-      <p class="panel__note">{{ n.net_per_ha }} т CO₂e × {{ n.price }} (15% буферлік пулдан кейін)</p>
-      <div class="split" role="img" aria-label="Табыс бөлінісі: фермерге 75 пайыз, DalaCarbon AI-ға 25 пайыз">
-        <span class="split__farmer"></span><span class="split__platform"></span>
-      </div>
-      <dl class="split-legend">
-        <div><dt><span class="dot dot--farmer" aria-hidden="true"></span>Фермер · 75%</dt><dd>{{ n.farmer_per_ha }}</dd></div>
-        <div><dt><span class="dot dot--platform" aria-hidden="true"></span>DalaCarbon AI · 25%</dt><dd>{{ n.platform_per_ha }}</dd></div>
-      </dl>
-      <p class="panel__note">Әдістеме: Verra VM0042 / VT0014 · RothC моделі + ML</p>
-    </article>
-  </section>
-</div>
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}" defer></script>
 {% endblock %}

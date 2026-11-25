@@ -20,17 +20,44 @@ dalacarbon/
 ├── app/
 │   ├── __init__.py         # create_app(): баптаулар, қате беттері
 │   ├── auth.py             # /register, /login, /logout, login_required
+│   ├── google_auth.py      # /auth/google — Google арқылы кіру (Authlib, OpenID Connect)
 │   ├── main.py             # /dashboard — кіргеннен кейінгі негізгі бет
 │   ├── validators.py       # форма тексеру ережелері (Python)
 │   ├── security.py         # Argon2id, CSRF, қауіпсіздік тақырыптары
 │   ├── db.py               # PostgreSQL: пайдаланушыны сақтау және іздеу
-│   ├── templates/          # base, register, login, dashboard, error, partials/
+│   ├── templates/          # base, register, login, google_complete, dashboard, error, partials/
 │   └── static/             # css/app.css, js/{common,register,login}.js, img/
 ├── db/
 │   ├── schema.sql          # users кестесі
 │   └── setup.sql           # негізгі серверде рөл мен дерекқор жасау
-└── tests/                  # pytest: 33 тест
+└── tests/                  # pytest: 44 тест
 ```
+
+## Google арқылы кіруді баптау
+
+Код дайын — тек Google-дан өз кілттеріңізді алу керек (тегін, ~10 минут):
+
+1. <https://console.cloud.google.com/> → жоғарыдан **New Project** → атауы `DalaCarbon AI`.
+2. **APIs & Services → OAuth consent screen** (немесе **Google Auth Platform → Branding**):
+   - App name: `DalaCarbon AI`, support email — өз поштаңыз;
+   - Audience: **External**, режимі **Testing**;
+   - **Test users** бөліміне кіретін Gmail мекенжайларын қосыңыз.
+3. **Credentials → Create credentials → OAuth client ID**:
+   - Application type: **Web application**;
+   - **Authorized redirect URIs** — екеуін де қосыңыз:
+     - `http://127.0.0.1:5000/auth/google/callback`
+     - `http://localhost:5000/auth/google/callback`
+4. Шыққан **Client ID** мен **Client secret**-ті `.env` файлына қойыңыз:
+   ```
+   GOOGLE_CLIENT_ID=....apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=GOCSPX-...
+   ```
+5. `run.py` қайта іске қосыңыз — Google батырмасы шын сілтемеге айналады.
+
+**Қалай жұмыс істейді:** Google `id_token` береді (қолтаңба, `state`, `nonce`, PKCE тексеріледі),
+email расталмаған болса кіргізбейді. Сол email-мен бұрын тіркелген аккаунт болса — оған байланысады.
+Жаңа пайдаланушыдан тек логин, облыс және шаруашылық түрі сұралады; оның құпиясөзі болмайды
+(`password_hash = NULL`, `google_sub` толтырылады).
 
 ## Іске қосу
 
@@ -84,7 +111,7 @@ uv pip install --python .venv\Scripts\python.exe -r requirements.txt -r requirem
 | 7 | PostgreSQL, хеш | `users.password_hash` — `$argon2id$v=19$m=65536,t=3,p=4$...`; ашық құпиясөз сақталмайды |
 | 8 | Дұрыс болса — негізгі бет | Argon2 тексерісі → `session["user_id"]` → `/dashboard` |
 | 9 | Қате болса — кіргізбейді | HTTP 401 + бір ортақ хабарлама (логин жоқ па, құпиясөз қате ме — айырмайды, OWASP) |
-| 10 | Код құрылымы | Модульдер: `db.py`, `security.py`, `validators.py`, `auth.py`, `main.py`; 33 pytest тесті |
+| 10 | Код құрылымы | Модульдер: `db.py`, `security.py`, `validators.py`, `auth.py`, `main.py`; 44 pytest тесті |
 
 **Қосымша қорғаныс:** CSRF токені (тіркелу, кіру, шығу), SQL-инъекцияға қарсы параметрленген
 сұраныстар, логин табылмаса да Argon2 тексерісі (жауап уақыты бірдей), кіргенде сессияны жаңарту

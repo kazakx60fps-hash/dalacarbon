@@ -91,6 +91,42 @@ def validate_login(form: Mapping[str, str]) -> tuple[dict, dict[str, str]]:
     return data, errors
 
 
+def validate_google_profile(form: Mapping[str, str]) -> tuple[dict, dict[str, str]]:
+    """Google арқылы бірінші рет кіргенде: логин, облыс, шаруашылық түрі."""
+    full_name = " ".join((form.get("full_name") or "").split())
+    username = (form.get("username") or "").strip()
+    region = (form.get("region") or "").strip()
+    farm_type = (form.get("farm_type") or "").strip()
+
+    errors: dict[str, str] = {}
+    if len(full_name) > FULL_NAME_MAX:
+        errors["full_name"] = MESSAGES["full_name_too_long"]
+    if not username:
+        errors["username"] = MESSAGES["username_required"]
+    elif not USERNAME_RE.match(username):
+        errors["username"] = MESSAGES["username_invalid"]
+    if region not in _REGION_KEYS:
+        errors["region"] = MESSAGES["region_required"]
+    if farm_type not in _FARM_TYPE_KEYS:
+        errors["farm_type"] = MESSAGES["farm_type_required"]
+
+    data = {
+        "full_name": full_name or None,
+        "username": username,
+        "region": region,
+        "farm_type": farm_type,
+        "newsletter": form.get("newsletter") == "on",
+    }
+    return data, errors
+
+
+def suggest_username(email: str) -> str:
+    """Email-дің алдыңғы бөлігінен логин ұсынады: «Erlan.Dala+x@gmail.com» → «erlan_dala»."""
+    local = email.split("@", 1)[0].split("+", 1)[0].lower()
+    candidate = re.sub(r"[^a-z0-9_]+", "_", local).strip("_")[:32]
+    return candidate if len(candidate) >= 4 else (candidate + "_dala")[:32]
+
+
 def label_for(options: list[tuple[str, str]], key: str) -> str:
     return dict(options).get(key, key)
 

@@ -118,13 +118,15 @@ def register_success():
 
 # ---------- Кіру ----------
 
-def _render_login(login_value: str, errors: dict[str, str], failed: bool, remember: bool, status: int = 200):
+def _render_login(login_value: str, errors: dict[str, str], failed: bool, remember: bool,
+                  status: int = 200, notice: str | None = None):
     html = render_template(
         "login.html",
         login_value=login_value,
         errors=errors,
         failed=failed,
         remember=remember,
+        auth_notice=notice,
     )
     return html, status
 
@@ -134,7 +136,8 @@ def login():
     if g.user:
         return redirect(url_for("main.dashboard"))
     if request.method == "GET":
-        return _render_login(session.pop("login_prefill", ""), {}, failed=False, remember=False)
+        return _render_login(session.pop("login_prefill", ""), {}, failed=False, remember=False,
+                             notice=session.pop("auth_notice", None))
 
     check_csrf()
     data, errors = validate_login(request.form)

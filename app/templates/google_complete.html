@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "partials/_fields.html" import text_field, select_field, error_line %}
+
+{% block title %}Тіркелуді аяқтау — DalaCarbon AI{% endblock %}
+
+{% block content %}
+<section class="card" aria-labelledby="complete-title">
+  <div class="card__head">
+    <h1 id="complete-title">Тіркелуді аяқтау</h1>
+    <p>Google аккаунты расталды. Шаруашылығыңыз туралы бірнеше дерек қалды.</p>
+  </div>
+
+  <div class="google-chip">
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+    <span><span class="google-chip__label">Google аккаунты</span><strong>{{ email }}</strong></span>
+  </div>
+
+  {% if errors %}
+  <div class="alert alert--error" role="alert">
+    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    <div><strong>Тіркелу аяқталмады</strong><span>Белгіленген өрістерді тексеріңіз.</span></div>
+  </div>
+  {% endif %}
+
+  <form class="form" method="post" action="{{ url_for('google.complete') }}" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    {{ text_field('full_name', 'Аты-жөні немесе шаруашылық атауы', values.full_name, errors.full_name, required=False, autocomplete='name', maxlength=120) }}
+
+    {{ text_field('username', 'Логин', values.username, errors.username, autocomplete='username', hint='Латын әріптері, сандар және «_», 4–32 таңба. Google-дан ұсынылды — өзгертуге болады.', maxlength=32, autofocus=True) }}
+
+    <fieldset class="field{% if errors.region or errors.farm_type %} field--invalid{% endif %}">
+      <legend class="field__label">Шаруашылық туралы <span class="req" aria-hidden="true">*</span></legend>
+      <div class="grid-2">
+        {{ select_field('region', 'Облыс', regions, values.region, errors.region) }}
+        {{ select_field('farm_type', 'Шаруашылық түрі', farm_types, values.farm_type, errors.farm_type) }}
+      </div>
+      {{ error_line('region', errors.region) }}
+      {{ error_line('farm_type', errors.farm_type) }}
+    </fieldset>
+
+    <label class="check">
+      <input type="checkbox" name="newsletter"{% if values.newsletter %} checked{% endif %}>
+      <span>(Міндетті емес) Агро-кеңестер мен DalaCarbon жаңалықтарын email арқылы алғым келеді.</span>
+    </label>
+
+    <p class="terms">«Аккаунт ашу» батырмасын басу арқылы сіз DalaCarbon AI пайдалану шарттарымен келісесіз және құпиялылық саясатымен танысқаныңызды растайсыз. Құпиясөз жасалмайды — кейін де Google арқылы кіресіз.</p>
+
+    <button type="submit" class="btn btn--primary"><span class="btn__text">Аккаунт ашу</span></button>
+  </form>
+
+  <form method="post" action="{{ url_for('google.cancel') }}" class="card__foot">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    Басқа аккаунтпен кіргіңіз келе ме? <button type="submit" class="link-btn link-btn--inline">Бас тарту</button>
+  </form>
+</section>
+{% endblock %}

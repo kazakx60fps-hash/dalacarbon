@@ -10,10 +10,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600&family=IBM+Plex+Mono:wght@500&display=swap">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
-  {% include "partials/_scene.html" %}
+  {% block scene %}{% include "partials/_scene.html" %}{% endblock %}
 
+  {% block header %}
   <header class="topbar">
     <a class="brand" href="{{ url_for('auth.index') }}" aria-label="DalaCarbon AI — басты бет">
       <img class="brand__mark" src="{{ url_for('static', filename='img/mark-cream.svg') }}" alt="" width="40" height="40">
@@ -21,10 +23,13 @@
     </a>
     {% block topbar_action %}{% endblock %}
   </header>
+  {% endblock %}
 
+  {% block main %}
   <main class="page">
     {% block content %}{% endblock %}
   </main>
+  {% endblock %}
 
   <script src="{{ url_for('static', filename='js/common.js') }}" defer></script>
   {% block scripts %}{% endblock %}

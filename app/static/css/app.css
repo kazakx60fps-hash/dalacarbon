@@ -183,7 +183,17 @@ a:hover { color: var(--gold-hi); }
   border-radius: var(--radius); background: var(--sso); border: 1px solid var(--sso-line);
   color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
 }
-.sso__btn:hover { background: #22342C; border-color: #3E5A4D; }
+.sso__btn:hover { background: #22342C; border-color: #3E5A4D; color: var(--text); }
+a.sso__btn { text-decoration: none; }
+
+.google-chip {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  border-radius: 10px; background: var(--sso); border: 1px solid var(--sso-line);
+}
+.google-chip > span { display: flex; flex-direction: column; min-width: 0; }
+.google-chip__label { font-size: 12px; color: var(--muted); }
+.google-chip strong { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.link-btn--inline { align-self: auto; display: inline; padding: 0; font-weight: 600; }
 
 .divider { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted-2); }
 .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }

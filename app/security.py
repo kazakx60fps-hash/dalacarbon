@@ -19,7 +19,10 @@ def hash_password(password: str) -> str:
     return _hasher.hash(password)
 
 
-def verify_password(password_hash: str, password: str) -> bool:
+def verify_password(password_hash: str | None, password: str) -> bool:
+    if not password_hash:  # тек Google арқылы кіретін аккаунт
+        verify_dummy(password)
+        return False
     try:
         return _hasher.verify(password_hash, password)
     except (VerifyMismatchError, VerificationError, InvalidHashError):
@@ -37,7 +40,10 @@ _DUMMY_HASH = _hasher.hash("dalacarbon-timing-equaliser")
 
 
 def verify_dummy(password: str) -> None:
-    verify_password(_DUMMY_HASH, password)
+    try:
+        _hasher.verify(_DUMMY_HASH, password)
+    except (VerifyMismatchError, VerificationError, InvalidHashError):
+        pass
 
 
 _CSRF_SESSION_KEY = "_csrf_token"

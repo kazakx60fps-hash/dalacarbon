@@ -1,20 +1,44 @@
 {% extends "base.html" %}
-{% from "partials/_fields.html" import text_field, password_field %}
+{% from "partials/_fields.html" import error_line %}
 
 {% block title %}Кіру — DalaCarbon AI{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/app2.css') }}">{% endblock %}
+{% block body_class %}is-auth2{% endblock %}
+{% block scene %}<div class="bg-topo" aria-hidden="true"></div>{% endblock %}
+{% block header %}{% endblock %}
 
-{% block topbar_action %}
-<a class="topbar__link" href="{{ url_for('auth.register') }}">Тіркелу</a>
-{% endblock %}
+{% block main %}
+<div class="auth2">
+  <section class="auth2__hero">
+    <div class="auth2__bar">
+      <a class="brand-pill" href="{{ url_for('auth.index') }}" aria-label="DalaCarbon AI — басты бет">
+        <img src="{{ url_for('static', filename='img/mark-cream.svg') }}" alt="" width="28" height="28">
+        <span class="brand__name">DalaCarbon <span class="brand__ai">AI</span></span>
+      </a>
+      <button type="button" class="pill-btn" id="intro-toggle" aria-controls="intro">Анимацияны өткізу</button>
+    </div>
 
-{% block content %}
-<section class="card card--wide" aria-labelledby="login-title">
-  <div class="login-grid">
-    <div class="login-main">
-      <div class="card__head">
-        <h1 id="login-title">Даламызға қайта қош келдіңіз!</h1>
-        <p>Алқаптарыңыздың көміртегі есебі сізді күтіп тұр.</p>
+    {% include "partials/_intro.html" %}
+
+    <div class="auth2__headline">
+      <span class="auth2__rule" aria-hidden="true"></span>
+      <p class="auth2__title">Алқаптардың<br>көміртегі есебі</p>
+    </div>
+  </section>
+
+  <main class="auth2__side">
+    <section class="glass-card" aria-labelledby="login-title">
+      <div class="glass-card__head">
+        <h1 id="login-title">Қош келдіңіз!</h1>
+        <p>DalaCarbon AI аккаунтыңызға кіріңіз.</p>
       </div>
+
+      {% if auth_notice %}
+      <div class="alert alert--error" role="alert">
+        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.5h.01"/></svg>
+        <div><strong>Google арқылы кіру</strong><span>{{ auth_notice }}</span></div>
+      </div>
+      {% endif %}
 
       {% if failed %}
       <div class="alert alert--error" role="alert">
@@ -26,46 +50,71 @@
       </div>
       {% endif %}
 
-      <form id="login-form" class="form" method="post" action="{{ url_for('auth.login') }}" novalidate>
+      <form id="login-form" class="form form--tight" method="post" action="{{ url_for('auth.login') }}" novalidate>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-        {{ text_field('login', 'Логин немесе email', login_value, errors.login, autocomplete='username', maxlength=254, autofocus=(not login_value and not errors.password)) }}
+        <div class="field{% if errors.login %} field--invalid{% endif %}">
+          <label class="field__label" for="login">Логин немесе email</label>
+          <div class="input-icon">
+            <svg class="input-icon__lead" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+            <input class="input input--glass" id="login" name="login" type="text" value="{{ login_value }}"
+              placeholder="Логин не email енгізіңіз" autocomplete="username" maxlength="254" required aria-required="true"
+              spellcheck="false" aria-invalid="{{ 'true' if errors.login else 'false' }}" aria-describedby="login-error"
+              {%- if not login_value and not errors.password %} autofocus{% endif %}>
+          </div>
+          {{ error_line('login', errors.login) }}
+        </div>
 
-        {% call password_field('password', 'Құпиясөз', errors.password, autocomplete='current-password', autofocus=(login_value and not errors.login) or failed) %}
-        <button type="button" class="link-btn" data-notice="Құпиясөзді қалпына келтіру жақында қосылады. Әзірге әкімшіге хабарласыңыз.">Құпиясөзді ұмыттыңыз ба?</button>
-        {% endcall %}
+        <div class="field{% if errors.password %} field--invalid{% endif %}">
+          <label class="field__label" for="password">Құпиясөз</label>
+          <div class="input-icon">
+            <svg class="input-icon__lead" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+            <input class="input input--glass input--with-toggle" id="password" name="password" type="password"
+              placeholder="Құпиясөзді енгізіңіз" autocomplete="current-password" maxlength="128" required aria-required="true"
+              aria-invalid="{{ 'true' if errors.password else 'false' }}" aria-describedby="password-error"
+              {%- if (login_value and not errors.login) or failed %} autofocus{% endif %}>
+            <button type="button" class="pw-toggle pw-toggle--state" aria-controls="password" aria-pressed="false"
+              aria-label="Құпиясөзді көрсету" title="Құпиясөзді көрсету"
+              data-label-show="Құпиясөзді көрсету" data-label-hide="Құпиясөзді жасыру">
+              <svg class="icon-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="icon-eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17.7 17.7 0 0 1-3.2 4.2"/><path d="M6.6 6.6C3.9 8.3 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+            </button>
+          </div>
+          {{ error_line('password', errors.password) }}
+        </div>
 
-        <label class="check">
-          <input type="checkbox" name="remember"{% if remember %} checked{% endif %}>
-          <span>Мені есте сақта (30 күн)</span>
-        </label>
+        <div class="form-row">
+          <label class="check check--sm">
+            <input type="checkbox" name="remember"{% if remember %} checked{% endif %}>
+            <span>Мені есте сақта</span>
+          </label>
+          <button type="button" class="link-btn" data-notice="Құпиясөзді қалпына келтіру жақында қосылады. Әзірге әкімшіге хабарласыңыз.">Құпиясөзді ұмыттыңыз ба?</button>
+        </div>
 
-        <button type="submit" class="btn btn--primary" id="login-submit">
+        <button type="submit" class="btn btn--gold" id="login-submit">
           <span class="btn__spinner" aria-hidden="true"></span>
           <span class="btn__text">Кіру</span>
+          <svg class="btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
         </button>
-
-        <p class="card__foot">Аккаунт керек пе? <a href="{{ url_for('auth.register') }}">Тіркелу</a></p>
       </form>
 
       <div class="divider">немесе</div>
-      {% with sso_verb='кіру' %}{% include "partials/_sso.html" %}{% endwith %}
-      <p class="notice" id="notice" role="status" hidden></p>
-    </div>
 
-    <aside class="qr-side" aria-labelledby="qr-title">
-      <div class="qr" role="img" aria-label="Мобильді қосымшамен кіруге арналған QR-код (үлгі)">
-        <svg viewBox="-0.5 -0.5 26 26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#0B1F18" d="{{ qr_path }}"/></svg>
-        <img class="qr__logo" src="{{ url_for('static', filename='img/mark-color.svg') }}" alt="" width="46" height="46">
-      </div>
-      <h2 id="qr-title">QR-код арқылы кіру</h2>
-      <p><strong>DalaCarbon мобильді қосымшасымен</strong> сканерлеп, жүйеге бірден кіріңіз.</p>
-      <button type="button" class="link-btn" data-notice="Telegram-бот арқылы кіру жақында қосылады.">Немесе Telegram-бот арқылы кіру</button>
-    </aside>
-  </div>
-</section>
+      {% set google_icon %}<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>{% endset %}
+      {% if google_enabled %}
+      <a class="btn btn--ghost" href="{{ url_for('google.start') }}">{{ google_icon }} Google арқылы кіру</a>
+      {% else %}
+      <button type="button" class="btn btn--ghost" data-notice="Google арқылы кіру әлі бапталмаған (.env-те GOOGLE_CLIENT_ID жоқ). Әзірге логин мен құпиясөзді пайдаланыңыз.">{{ google_icon }} Google арқылы кіру</button>
+      {% endif %}
+      <p class="notice" id="notice" role="status" hidden></p>
+
+      <p class="glass-card__foot">Аккаунт керек пе? <a href="{{ url_for('auth.register') }}">Тіркелу</a></p>
+    </section>
+  </main>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/login.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/intro.js') }}" defer></script>
 {% endblock %}

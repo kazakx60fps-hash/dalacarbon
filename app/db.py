@@ -104,7 +104,63 @@ def insert_user(
     return row["id"]
 
 
-_USER_COLUMNS = "id, email, username, full_name, password_hash, region, farm_type, created_at"
+_USER_COLUMNS = "id, email, username, full_name, password_hash, google_sub, region, farm_type, created_at"
+
+
+def find_user_by_google_sub(conn: psycopg.Connection, sub: str) -> dict | None:
+    return conn.execute(f"SELECT {_USER_COLUMNS} FROM users WHERE google_sub = %s", (sub,)).fetchone()
+
+
+def find_user_by_email(conn: psycopg.Connection, email: str) -> dict | None:
+    return conn.execute(
+        f"SELECT {_USER_COLUMNS} FROM users WHERE LOWER(email) = LOWER(%s)", (email,)
+    ).fetchone()
+
+
+def link_google(conn: psycopg.Connection, user_id: int, sub: str) -> None:
+    """Бар аккаунтқа Google-ды байланыстырады (тек бос болса)."""
+    conn.execute(
+        "UPDATE users SET google_sub = %s WHERE id = %s AND google_sub IS NULL", (sub, user_id)
+    )
+
+
+def insert_google_user(
+    conn: psycopg.Connection,
+    *,
+    email: str,
+    username: str,
+    full_name: str | None,
+    google_sub: str,
+    region: str,
+    farm_type: str,
+    newsletter: bool,
+) -> int:
+    """Google арқылы тіркелген пайдаланушы: құпиясөз хеші жоқ (NULL)."""
+    try:
+        row = conn.execute(
+            """
+            INSERT INTO users (email, username, full_name, google_sub, region, farm_type, newsletter)
+            VALUES (%(email)s, %(username)s, %(full_name)s, %(google_sub)s,
+                    %(region)s, %(farm_type)s, %(newsletter)s)
+            RETURNING id
+            """,
+            {
+                "email": email,
+                "username": username,
+                "full_name": full_name,
+                "google_sub": google_sub,
+                "region": region,
+                "farm_type": farm_type,
+                "newsletter": newsletter,
+            },
+        ).fetchone()
+    except psycopg.errors.UniqueViolation as exc:
+        constraint = exc.diag.constraint_name or ""
+        fields = {"email"} if "email" in constraint else {"username"}
+        if "google_sub" in constraint:
+            fields = {"google"}
+        raise DuplicateUserError(fields) from exc
+    return row["id"]
 
 
 def find_user_by_login(conn: psycopg.Connection, identifier: str) -> dict | None:
