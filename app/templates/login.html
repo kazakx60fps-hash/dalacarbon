@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from "partials/_fields.html" import text_field, password_field %}
+
+{% block title %}Кіру — DalaCarbon AI{% endblock %}
+
+{% block topbar_action %}
+<a class="topbar__link" href="{{ url_for('auth.register') }}">Тіркелу</a>
+{% endblock %}
+
+{% block content %}
+<section class="card card--wide" aria-labelledby="login-title">
+  <div class="login-grid">
+    <div class="login-main">
+      <div class="card__head">
+        <h1 id="login-title">Даламызға қайта қош келдіңіз!</h1>
+        <p>Алқаптарыңыздың көміртегі есебі сізді күтіп тұр.</p>
+      </div>
+
+      {% if failed %}
+      <div class="alert alert--error" role="alert">
+        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        <div>
+          <strong>Кіру сәтсіз аяқталды</strong>
+          <span>Логин немесе құпиясөз сәйкес келмейді. Мәліметтерді тексеріп, қайта көріңіз.</span>
+        </div>
+      </div>
+      {% endif %}
+
+      <form id="login-form" class="form" method="post" action="{{ url_for('auth.login') }}" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        {{ text_field('login', 'Логин немесе email', login_value, errors.login, autocomplete='username', maxlength=254, autofocus=(not login_value and not errors.password)) }}
+
+        {% call password_field('password', 'Құпиясөз', errors.password, autocomplete='current-password', autofocus=(login_value and not errors.login) or failed) %}
+        <button type="button" class="link-btn" data-notice="Құпиясөзді қалпына келтіру жақында қосылады. Әзірге әкімшіге хабарласыңыз.">Құпиясөзді ұмыттыңыз ба?</button>
+        {% endcall %}
+
+        <label class="check">
+          <input type="checkbox" name="remember"{% if remember %} checked{% endif %}>
+          <span>Мені есте сақта (30 күн)</span>
+        </label>
+
+        <button type="submit" class="btn btn--primary" id="login-submit">
+          <span class="btn__spinner" aria-hidden="true"></span>
+          <span class="btn__text">Кіру</span>
+        </button>
+
+        <p class="card__foot">Аккаунт керек пе? <a href="{{ url_for('auth.register') }}">Тіркелу</a></p>
+      </form>
+
+      <div class="divider">немесе</div>
+      {% with sso_verb='кіру' %}{% include "partials/_sso.html" %}{% endwith %}
+      <p class="notice" id="notice" role="status" hidden></p>
+    </div>
+
+    <aside class="qr-side" aria-labelledby="qr-title">
+      <div class="qr" role="img" aria-label="Мобильді қосымшамен кіруге арналған QR-код (үлгі)">
+        <svg viewBox="-0.5 -0.5 26 26" shape-rendering="crispEdges" aria-hidden="true"><path fill="#0B1F18" d="{{ qr_path }}"/></svg>
+        <img class="qr__logo" src="{{ url_for('static', filename='img/mark-color.svg') }}" alt="" width="46" height="46">
+      </div>
+      <h2 id="qr-title">QR-код арқылы кіру</h2>
+      <p><strong>DalaCarbon мобильді қосымшасымен</strong> сканерлеп, жүйеге бірден кіріңіз.</p>
+      <button type="button" class="link-btn" data-notice="Telegram-бот арқылы кіру жақында қосылады.">Немесе Telegram-бот арқылы кіру</button>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/login.js') }}" defer></script>
+{% endblock %}

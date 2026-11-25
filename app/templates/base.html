@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>{% block title %}DalaCarbon AI{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/mark-color.svg') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600&family=IBM+Plex+Mono:wght@500&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  {% include "partials/_scene.html" %}
+
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('auth.index') }}" aria-label="DalaCarbon AI — басты бет">
+      <img class="brand__mark" src="{{ url_for('static', filename='img/mark-cream.svg') }}" alt="" width="40" height="40">
+      <span class="brand__name">DalaCarbon <span class="brand__ai">AI</span></span>
+    </a>
+    {% block topbar_action %}{% endblock %}
+  </header>
+
+  <main class="page">
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='js/common.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

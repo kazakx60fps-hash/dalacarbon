@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Басқару тақтасы — DalaCarbon AI{% endblock %}
+{% block body_class %}is-dash{% endblock %}
+
+{% block topbar_action %}
+<div class="userbar">
+  <span class="userbar__avatar" aria-hidden="true">{{ initials }}</span>
+  <span class="userbar__who">
+    <span class="userbar__name">{{ display_name }}</span>
+    <span class="userbar__login">@{{ username }}</span>
+  </span>
+  <form method="post" action="{{ url_for('auth.logout') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" class="topbar__link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      Шығу
+    </button>
+  </form>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="dash">
+  <header class="dash__head">
+    <span class="eyebrow">Басқару тақтасы · 2026 маусымы</span>
+    <h1>Қош келдіңіз, {{ display_name }}!</h1>
+    <p class="dash__meta">{{ region }} · {{ farm_type }}</p>
+  </header>
+
+  <p class="notice notice--inline">
+    Демо деректер: жоба құжатындағы базалық пилоттық сценарий ({{ n.area }} га, {{ n.price }}/т CO₂e). Нақты алқаптарыңыз қосылғанда ауыстырылады.
+  </p>
+
+  <section class="kpis" aria-label="Негізгі көрсеткіштер">
+    <article class="panel kpi">
+      <span class="kpi__label">Пилоттық алаң</span>
+      <span class="kpi__value">{{ n.area }} <small>га</small></span>
+      <span class="kpi__note">Базалық сценарий</span>
+    </article>
+    <article class="panel kpi">
+      <span class="kpi__label">Таза секвестрация</span>
+      <span class="kpi__value">{{ n.net_total }} <small>т CO₂e / жыл</small></span>
+      <span class="kpi__note">0,75 т/га, 15% буфер шегерілген</span>
+    </article>
+    <article class="panel kpi">
+      <span class="kpi__label">Фермер табысы</span>
+      <span class="kpi__value">{{ n.farmer_total }} <small>/ жыл</small></span>
+      <span class="kpi__note">Кредит табысының 75%-ы</span>
+    </article>
+    <article class="panel kpi">
+      <span class="kpi__label">Кредит бағасы</span>
+      <span class="kpi__value">{{ n.price }} <small>/ т CO₂e</small></span>
+      <span class="kpi__note">Сценарийлер: $12 · $16 · $22</span>
+    </article>
+  </section>
+
+  <section class="dash__grid">
+    <article class="panel">
+      <div class="panel__head">
+        <h2>Пилоттық алқап · NDVI картасы</h2>
+        <span class="mono">SENTINEL-2 L2A · 10 М</span>
+      </div>
+      <div class="ndvi" role="img" aria-label="Алқаптың NDVI жылулық картасы, үлгі визуализация">
+        {% for level in ndvi %}<span class="parcel__cell--{{ level }}"></span>{% endfor %}
+      </div>
+      <div class="legend"><span>Жалаңаш топырақ</span><span class="legend__ramp" aria-hidden="true"></span><span>Қалың өсімдік</span></div>
+    </article>
+
+    <article class="panel">
+      <div class="panel__head"><h2>1 гектардан түсетін табыс</h2></div>
+      <span class="kpi__value kpi__value--xl">{{ n.revenue_per_ha }} <small>/ га / жыл</small></span>
+      <p class="panel__note">{{ n.net_per_ha }} т CO₂e × {{ n.price }} (15% буферлік пулдан кейін)</p>
+      <div class="split" role="img" aria-label="Табыс бөлінісі: фермерге 75 пайыз, DalaCarbon AI-ға 25 пайыз">
+        <span class="split__farmer"></span><span class="split__platform"></span>
+      </div>
+      <dl class="split-legend">
+        <div><dt><span class="dot dot--farmer" aria-hidden="true"></span>Фермер · 75%</dt><dd>{{ n.farmer_per_ha }}</dd></div>
+        <div><dt><span class="dot dot--platform" aria-hidden="true"></span>DalaCarbon AI · 25%</dt><dd>{{ n.platform_per_ha }}</dd></div>
+      </dl>
+      <p class="panel__note">Әдістеме: Verra VM0042 / VT0014 · RothC моделі + ML</p>
+    </article>
+  </section>
+</div>
+{% endblock %}

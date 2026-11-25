@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% from "partials/_fields.html" import text_field, password_field, select_field, error_line %}
+
+{% block title %}Аккаунт ашу — DalaCarbon AI{% endblock %}
+
+{% block topbar_action %}
+<a class="topbar__link" href="{{ url_for('auth.login') }}">Кіру</a>
+{% endblock %}
+
+{% block content %}
+<section class="card" aria-labelledby="register-title">
+  <div class="card__head">
+    <h1 id="register-title">Аккаунт ашу</h1>
+    <p>Топырағыңыздағы көміртегін табысқа айналдырыңыз.</p>
+  </div>
+
+  {% if errors %}
+  <div class="alert alert--error" role="alert" id="form-alert">
+    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    <div>
+      <strong>Тіркелу аяқталмады</strong>
+      <span>Белгіленген өрістерді тексеріп, қайта жіберіңіз.</span>
+    </div>
+  </div>
+  {% endif %}
+
+  {% with sso_verb='тіркелу' %}{% include "partials/_sso.html" %}{% endwith %}
+  <p class="notice" id="notice" role="status" hidden></p>
+
+  <div class="divider">немесе форманы толтырыңыз</div>
+
+  <form id="register-form" class="form" method="post" action="{{ url_for('auth.register') }}" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    {{ text_field('email', 'Email', values.email, errors.email, type='email', autocomplete='email', placeholder='you@example.kz', maxlength=254, autofocus=not errors, inputmode='email') }}
+
+    {{ text_field('full_name', 'Аты-жөні немесе шаруашылық атауы', values.full_name, errors.full_name, required=False, autocomplete='name', placeholder='мысалы, «Жасыл Дала» ШҚ', maxlength=120) }}
+
+    {{ text_field('username', 'Логин', values.username, errors.username, autocomplete='username', hint='Латын әріптері, сандар және «_», 4–32 таңба', maxlength=32) }}
+
+    {% call password_field('password', 'Құпиясөз', errors.password, describedby='password-strength password-rules') %}
+    <div class="meter" data-level="0">
+      <div class="meter__bars" aria-hidden="true"><span class="meter__bar"></span><span class="meter__bar"></span><span class="meter__bar"></span><span class="meter__bar"></span></div>
+      <span class="meter__label" id="password-strength" aria-live="polite">Күші: —</span>
+    </div>
+    <ul class="rules" id="password-rules" aria-label="Құпиясөз талаптары">
+      {% for key, text in [('length', 'Кемінде 8 таңба'), ('case', 'Бас және кіші әріп'), ('digit', 'Кемінде бір сан'), ('special', 'Арнайы таңба (ұсынылады)')] %}
+      <li class="rule" data-rule="{{ key }}">
+        <svg class="rule__icon rule__icon--todo" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/></svg>
+        <svg class="rule__icon rule__icon--done" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        <span>{{ text }}</span><span class="sr-only rule__state"> — орындалмаған</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endcall %}
+
+    {{ password_field('password_confirm', 'Құпиясөзді қайталау', errors.password_confirm, show_label='Қайталанған құпиясөзді көрсету', hide_label='Қайталанған құпиясөзді жасыру') }}
+
+    <fieldset class="field{% if errors.region or errors.farm_type %} field--invalid{% endif %}">
+      <legend class="field__label">Шаруашылық туралы <span class="req" aria-hidden="true">*</span></legend>
+      <div class="grid-2">
+        {{ select_field('region', 'Облыс', regions, values.region, errors.region) }}
+        {{ select_field('farm_type', 'Шаруашылық түрі', farm_types, values.farm_type, errors.farm_type) }}
+      </div>
+      {{ error_line('region', errors.region) }}
+      {{ error_line('farm_type', errors.farm_type) }}
+    </fieldset>
+
+    <label class="check">
+      <input type="checkbox" name="newsletter"{% if newsletter %} checked{% endif %}>
+      <span>(Міндетті емес) Агро-кеңестер мен DalaCarbon жаңалықтарын email арқылы алғым келеді. Жазылымнан кез келген уақытта бас тартуға болады.</span>
+    </label>
+
+    <p class="terms">«Аккаунт ашу» батырмасын басу арқылы сіз DalaCarbon AI пайдалану шарттарымен келісесіз және құпиялылық саясатымен танысқаныңызды растайсыз.</p>
+
+    <button type="submit" class="btn btn--primary" id="register-submit">
+      <span class="btn__spinner" aria-hidden="true"></span>
+      <span class="btn__text">Аккаунт ашу</span>
+    </button>
+
+    <p class="card__foot">Аккаунтыңыз бар ма? <a href="{{ url_for('auth.login') }}">Кіру</a></p>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/register.js') }}" defer></script>
+{% endblock %}

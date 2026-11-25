@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><title>DalaCarbon AI — avatar</title><circle cx="256" cy="256" r="256" fill="#0F4C3A"/><g transform="translate(70 76) scale(3.0)">
+  <defs>
+    <clipPath id="ad"><path d="M16 12H60A48 48 0 0 1 60 108H16Z"/></clipPath>
+    <mask id="al" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="120">
+      <rect width="120" height="120" fill="#fff"/>
+      <path d="M38 62C40 41 56 27 84 23C82 44 50 50 38 62Z" fill="#000"/>
+    </mask>
+  </defs>
+  <g clip-path="url(#ad)">
+    <rect width="120" height="60" fill="#F4F1EA" mask="url(#al)"/>
+    <rect y="64" width="120" height="12" fill="#F4F1EA"/>
+    <rect y="80" width="120" height="9" fill="#F4F1EA"/>
+    <rect y="93" width="120" height="6" fill="#F4F1EA"/>
+    <rect y="103" width="120" height="5" fill="#E0A93B"/>
+  </g>
+</g></svg>

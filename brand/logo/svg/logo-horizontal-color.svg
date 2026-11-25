@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 140" width="560" height="140"><title>DalaCarbon AI</title><g transform="translate(10 10) scale(1.0)">
+  <defs>
+    <clipPath id="hd"><path d="M16 12H60A48 48 0 0 1 60 108H16Z"/></clipPath>
+    <mask id="hl" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="120">
+      <rect width="120" height="120" fill="#fff"/>
+      <path d="M38 62C40 41 56 27 84 23C82 44 50 50 38 62Z" fill="#000"/>
+    </mask>
+  </defs>
+  <g clip-path="url(#hd)">
+    <rect width="120" height="60" fill="#0F4C3A" mask="url(#hl)"/>
+    <rect y="64" width="120" height="12" fill="#0F4C3A"/>
+    <rect y="80" width="120" height="9" fill="#0F4C3A"/>
+    <rect y="93" width="120" height="6" fill="#0F4C3A"/>
+    <rect y="103" width="120" height="5" fill="#E0A93B"/>
+  </g>
+</g><text x="150" y="84" text-anchor="start" font-family="Bahnschrift, 'DIN Alternate', 'Barlow Semi Condensed', 'Segoe UI', sans-serif" font-size="64" font-weight="600" font-stretch="condensed" letter-spacing="-0.5" fill="#0F4C3A">DalaCarbon<tspan fill="#E0A93B" dx="10.2">AI</tspan></text><text x="152" y="116" text-anchor="start" font-family="Bahnschrift, 'DIN Alternate', 'Barlow Semi Condensed', 'Segoe UI', sans-serif" font-size="15.4" font-weight="400" letter-spacing="3.8" fill="#5B6B63">SOIL CARBON INTELLIGENCE</text></svg>

@@ -1,0 +1,31 @@
+{# Фон: түнгі дала — жұлдыздар, күн, Sentinel-2 орбитасы, NDVI алқабы, төбелер, топырақ қабаттары #}
+<div class="scene" aria-hidden="true">
+  <div class="scene__stars"></div>
+  <div class="scene__glow"></div>
+  <div class="scene__sun"></div>
+  <div class="scene__orbit"></div>
+  <div class="scene__sat">
+    <svg width="46" height="28" viewBox="0 0 46 28" fill="none" stroke="#F4F1EA" stroke-width="1.6" stroke-linejoin="round">
+      <rect x="17" y="8" width="12" height="12" rx="2" fill="#0B3126"/>
+      <rect x="1" y="10" width="14" height="8" fill="#5A4A22" stroke="#E0A93B"/>
+      <rect x="31" y="10" width="14" height="8" fill="#5A4A22" stroke="#E0A93B"/>
+      <path d="M23 20v5"/>
+      <circle cx="23" cy="26" r="1.5" fill="#F4F1EA"/>
+    </svg>
+    <span>SENTINEL-2</span>
+  </div>
+  <div class="scene__parcel">
+    <div class="parcel">
+      {% for level in parcel_cells %}<span class="parcel__cell parcel__cell--{{ level }}"></span>{% endfor %}
+    </div>
+  </div>
+  {% for i in range(1, 7) %}
+  <svg class="spark spark--{{ i }}" viewBox="0 0 24 24"><path d="M12 1.5c.6 5.6 4.9 9.9 10.5 10.5-5.6.6-9.9 4.9-10.5 10.5C11.4 16.9 7.1 12.6 1.5 12 7.1 11.4 11.4 7.1 12 1.5z"/></svg>
+  {% endfor %}
+  <svg class="scene__hills" viewBox="0 0 1440 300" preserveAspectRatio="none">
+    <path class="hill hill--far" d="M0 160C200 120 380 150 560 130C760 108 920 150 1100 128C1250 112 1360 130 1440 120V300H0Z"/>
+    <path class="hill hill--mid" d="M0 210C240 175 420 205 640 185C860 165 1040 200 1240 182C1340 174 1400 180 1440 178V300H0Z"/>
+    <path class="hill hill--near" d="M0 250C300 228 560 250 820 236C1060 222 1260 244 1440 232V300H0Z"/>
+  </svg>
+  <div class="scene__strata"><span></span><span></span><span></span><span></span></div>
+</div>
