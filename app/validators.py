@@ -279,3 +279,30 @@ def validate_parcel(form: Mapping[str, str]) -> tuple[dict, dict[str, str]]:
     if data["practice"] not in _PRACTICE_KEYS:
         errors["practice"] = PARCEL_MESSAGES["practice_required"]
     return data, errors
+
+
+def validate_reset_request(form: Mapping[str, str]) -> tuple[str, str | None]:
+    """«Құпиясөзді ұмыттым» формасы: тек email."""
+    email = (form.get("email") or "").strip()
+    if not email:
+        return email, MESSAGES["email_required"]
+    if len(email) > EMAIL_MAX:
+        return email, MESSAGES["email_too_long"]
+    if not EMAIL_RE.match(email):
+        return email, MESSAGES["email_invalid"]
+    return email, None
+
+
+def validate_new_password(form: Mapping[str, str], username: str) -> tuple[str, dict[str, str]]:
+    """Жаңа құпиясөз: тіркелудегідей ережелер + қайталау."""
+    password = form.get("password") or ""
+    confirm = form.get("password_confirm") or ""
+    errors: dict[str, str] = {}
+    problem = _validate_password(password, username)
+    if problem:
+        errors["password"] = problem
+    if not confirm:
+        errors["password_confirm"] = MESSAGES["confirm_required"]
+    elif confirm != password:
+        errors["password_confirm"] = MESSAGES["confirm_mismatch"]
+    return password, errors

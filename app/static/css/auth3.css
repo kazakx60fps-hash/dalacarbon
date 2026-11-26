@@ -90,6 +90,20 @@
 .v7-strength { display: grid; gap: 8px; margin-top: -4px; }
 .v7 .rules { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; padding: 0; list-style: none; font-size: 12.5px; }
 
+/* Сәтті хабар, «хат жіберілді» күйі */
+.alert--ok { background: rgba(71, 205, 137, .12); border: 1px solid rgba(71, 205, 137, .45); color: var(--ok); }
+.alert--ok strong { color: #C9F2DA; }
+.alert--ok span { color: var(--ok); }
+.v7__note { margin: 0; font-size: 12.5px; color: var(--muted-2); text-align: center; line-height: 1.5; }
+.v7-sent { display: grid; gap: 12px; padding: 18px; border-radius: 16px; background: rgba(3, 18, 12, .4); border: 1px solid rgba(200, 240, 215, .14); }
+.v7-sent__icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; color: var(--gold-hi);
+  background: rgba(224, 169, 59, .12); border: 1px solid rgba(224, 169, 59, .35); animation: v7Float 3.5s ease-in-out infinite; }
+.v7-sent p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-2); }
+.v7-sent strong { color: var(--cream); word-break: break-all; }
+.v7-sent__list { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+@keyframes v7Float { 50% { transform: translateY(-4px); } }
+a.v7-btn { text-decoration: none; }
+
 /* ── Ортадағы логотип: екі шыны үшбұрыш ── */
 .v7__logo { position: absolute; left: 50%; top: 50%; z-index: 3; width: 76px; height: 76px; margin: -38px 0 0 -38px; pointer-events: none;
   opacity: 0; transform: scale(.6) rotate(-12deg); transition: opacity .45s var(--v7-ease), transform .6s var(--v7-spring); }

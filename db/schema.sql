@@ -50,3 +50,19 @@ CREATE TABLE IF NOT EXISTS parcels (
 CREATE INDEX IF NOT EXISTS parcels_user_idx ON parcels (user_id, created_at);
 
 COMMENT ON TABLE parcels IS 'Пайдаланушы алқаптары (MRV есебіне кіретін учаскелер)';
+
+-- Құпиясөзді қалпына келтіру. Токеннің өзі емес, тек SHA-256 хеші сақталады;
+-- сілтеме бір рет қана жарамды және 30 минуттан кейін ескіреді.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS session_epoch INTEGER NOT NULL DEFAULT 0;  -- өссе, ескі сессиялар жабылады
+
+CREATE TABLE IF NOT EXISTS password_resets (
+    id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id    BIGINT      NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    token_hash CHAR(64)    NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL,
+    used_at    TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS password_resets_user_idx ON password_resets (user_id, created_at);
+
+COMMENT ON TABLE password_resets IS 'Құпиясөзді қалпына келтіру сілтемелері (токен хеші, мерзімі, қолданылғаны)';

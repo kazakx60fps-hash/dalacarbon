@@ -18,9 +18,11 @@ from .db import (
     find_user_by_email,
     find_user_by_google_sub,
     get_db,
+    get_user,
     insert_google_user,
     link_google,
 )
+from .auth import start_session
 from .security import check_csrf
 from .validators import FARM_TYPES, MESSAGES, REGIONS, suggest_username, validate_google_profile
 
@@ -63,8 +65,7 @@ def _fail(reason: str):
 
 
 def _login(user_id: int):
-    session.clear()  # session fixation-ға қарсы
-    session["user_id"] = user_id
+    start_session(get_user(get_db(), user_id))  # session fixation-ға қарсы + дәуір белгісі
     return redirect(url_for("main.dashboard"))
 
 

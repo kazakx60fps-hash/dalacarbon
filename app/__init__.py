@@ -89,6 +89,16 @@ def create_app(test_config: dict | None = None) -> Flask:
         # NDVI картасы: бос болса — NASA MODIS (кілтсіз), толса — Copernicus Sentinel-2 (10 м)
         SENTINEL_HUB_INSTANCE_ID=os.environ.get("SENTINEL_HUB_INSTANCE_ID", "").strip(),
         SENTINEL_HUB_LAYER=os.environ.get("SENTINEL_HUB_LAYER", "NDVI").strip() or "NDVI",
+        # Құпиясөзді қалпына келтіру хаттары (SMTP). MAIL_SERVER бос болса — сілтеме терминалға шығады.
+        MAIL_SERVER=os.environ.get("MAIL_SERVER", "").strip(),
+        MAIL_PORT=os.environ.get("MAIL_PORT", "587").strip() or "587",
+        MAIL_USERNAME=os.environ.get("MAIL_USERNAME", "").strip(),
+        MAIL_PASSWORD=os.environ.get("MAIL_PASSWORD", ""),
+        MAIL_FROM=os.environ.get("MAIL_FROM", "").strip(),
+        # Хаттағы сілтеменің адресі. Бос болса — сұраныс келген хост (әзірлеуге ыңғайлы).
+        # Нақты серверде міндетті түрде толтырыңыз: Host тақырыбын бұрмалау шабуылынан қорғайды.
+        APP_BASE_URL=os.environ.get("APP_BASE_URL", "").strip().rstrip("/"),
+        PASSWORD_RESET_TTL_MIN=30,
     )
     if test_config:
         app.config.update(test_config)

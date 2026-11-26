@@ -10,6 +10,13 @@
   <p>DalaCarbon AI аккаунтыңызға кіріңіз</p>
 </div>
 
+{% if success_notice %}
+<div class="alert alert--ok" role="status">
+  <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16.5 9.5"/></svg>
+  <div><strong>Дайын</strong><span>{{ success_notice }}</span></div>
+</div>
+{% endif %}
+
 {% if auth_notice %}
 <div class="alert alert--error" role="alert">
   <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.5h.01"/></svg>
@@ -65,7 +72,7 @@
       <input type="checkbox" name="remember"{% if remember %} checked{% endif %}>
       <span>Мені есте сақта</span>
     </label>
-    <button type="button" class="link-btn" data-notice="Құпиясөзді қалпына келтіру жақында қосылады. Әзірге әкімшіге хабарласыңыз.">Құпиясөзді ұмыттыңыз ба?</button>
+    <a class="link-btn" href="{{ url_for('auth.forgot_password') }}" data-swap>Құпиясөзді ұмыттыңыз ба?</a>
   </div>
 
   <button type="submit" class="btn v7-btn" id="login-submit">

@@ -26,7 +26,7 @@ def app(db_url):
     # Google кілттері әдейі бос — .env-те шын кілттер болса да тесттер соларға тәуелді емес.
     return create_app({
         "TESTING": True, "SECRET_KEY": "test-secret", "DATABASE_URL": db_url,
-        "GOOGLE_CLIENT_ID": "", "GOOGLE_CLIENT_SECRET": "", "SENTINEL_HUB_INSTANCE_ID": "",
+        "GOOGLE_CLIENT_ID": "", "GOOGLE_CLIENT_SECRET": "", "SENTINEL_HUB_INSTANCE_ID": "", "MAIL_SERVER": "", "APP_BASE_URL": "",
     })
 
 

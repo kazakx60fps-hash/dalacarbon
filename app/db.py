@@ -104,7 +104,7 @@ def insert_user(
     return row["id"]
 
 
-_USER_COLUMNS = "id, email, username, full_name, password_hash, google_sub, region, farm_type, created_at"
+_USER_COLUMNS = "id, email, username, full_name, password_hash, google_sub, region, farm_type, created_at, session_epoch"
 
 
 def find_user_by_google_sub(conn: psycopg.Connection, sub: str) -> dict | None:
@@ -182,6 +182,45 @@ def get_user(conn: psycopg.Connection, user_id: int) -> dict | None:
 
 def update_password_hash(conn: psycopg.Connection, user_id: int, password_hash: str) -> None:
     conn.execute("UPDATE users SET password_hash = %s WHERE id = %s", (password_hash, user_id))
+
+
+def reset_recently_requested(conn: psycopg.Connection, user_id: int, seconds: int) -> bool:
+    """Соңғы `seconds` секундта сілтеме жіберілген бе (поштаны спамнан қорғау)."""
+    row = conn.execute(
+        "SELECT 1 FROM password_resets WHERE user_id = %s AND created_at > NOW() - make_interval(secs => %s) LIMIT 1",
+        (user_id, seconds),
+    ).fetchone()
+    return row is not None
+
+
+def create_password_reset(conn: psycopg.Connection, user_id: int, token_hash: str, ttl_minutes: int) -> None:
+    conn.execute(
+        "INSERT INTO password_resets (user_id, token_hash, expires_at)"
+        " VALUES (%s, %s, NOW() + make_interval(mins => %s))",
+        (user_id, token_hash, ttl_minutes),
+    )
+
+
+def find_password_reset(conn: psycopg.Connection, token_hash: str) -> dict | None:
+    """Жарамды (қолданылмаған, мерзімі өтпеген) сілтеме және оның иесі."""
+    return conn.execute(
+        """
+        SELECT r.id AS reset_id, u.id AS user_id, u.username, u.email
+          FROM password_resets r JOIN users u ON u.id = r.user_id
+         WHERE r.token_hash = %s AND r.used_at IS NULL AND r.expires_at > NOW()
+        """,
+        (token_hash,),
+    ).fetchone()
+
+
+def complete_password_reset(conn: psycopg.Connection, user_id: int, password_hash: str) -> None:
+    """Жаңа хешті сақтайды, барлық ашық сессияларды жабады және иесінің барлық сілтемелерін өшіреді."""
+    with conn.transaction():
+        conn.execute(
+            "UPDATE users SET password_hash = %s, session_epoch = session_epoch + 1 WHERE id = %s",
+            (password_hash, user_id),
+        )
+        conn.execute("UPDATE password_resets SET used_at = NOW() WHERE user_id = %s AND used_at IS NULL", (user_id,))
 
 
 _PARCEL_COLUMNS = "id, name, area_ha, crop, practice, created_at"

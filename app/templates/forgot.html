@@ -1,0 +1,51 @@
+{% extends "auth_layout.html" %}
+{% from "partials/_fields.html" import text_field %}
+
+{% block title %}Құпиясөзді қалпына келтіру — DalaCarbon AI{% endblock %}
+{% block v7_attrs %}aria-labelledby="forgot-title"{% if error %} data-quick{% endif %}{% endblock %}
+
+{% block card %}
+{% if sent_to %}
+<div class="v7__head">
+  <h1 id="forgot-title">Поштаңызды <em>тексеріңіз</em></h1>
+  <p>Қалпына келтіру сілтемесі жіберілді</p>
+</div>
+
+<div class="v7-sent" role="status">
+  <span class="v7-sent__icon" aria-hidden="true">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg>
+  </span>
+  <p>Егер <strong>{{ sent_to }}</strong> мекенжайымен аккаунт тіркелген болса, оған құпиясөзді қалпына келтіру сілтемесі бар хат жіберілді.</p>
+  <ul class="v7-sent__list">
+    <li>Сілтеме <strong>{{ ttl }} минут</strong> жарамды және бір рет қана қолданылады.</li>
+    <li>Хат келмесе, «Спам» бумасын тексеріңіз немесе бір минуттан кейін қайта сұраңыз.</li>
+  </ul>
+</div>
+
+<a class="btn v7-btn" href="{{ url_for('auth.login') }}" data-swap>
+  <span class="btn__text">Кіру бетіне оралу</span>
+  <svg class="btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+</a>
+<p class="v7__foot">Басқа email керек пе? <a href="{{ url_for('auth.forgot_password') }}" data-swap>Қайта сұрау</a></p>
+
+{% else %}
+<div class="v7__head">
+  <h1 id="forgot-title">Құпиясөзді <em>қалпына келтіру</em></h1>
+  <p>Тіркелген email-ді жазыңыз — сілтеме жібереміз</p>
+</div>
+
+<form id="forgot-form" class="form v7__form" method="post" action="{{ url_for('auth.forgot_password') }}" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {{ text_field('email', 'Email', email_value, error, type='email', autocomplete='email', placeholder='you@example.kz', maxlength=254, autofocus=True, inputmode='email', icon='mail') }}
+
+  <button type="submit" class="btn v7-btn" id="forgot-submit">
+    <span class="btn__spinner" aria-hidden="true"></span>
+    <span class="btn__text">Сілтеме жіберу</span>
+    <svg class="btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+  </button>
+</form>
+
+<p class="v7__note">Google арқылы тіркелген болсаңыз, осы жерден құпиясөз орнатып, кейін логинмен де кіре аласыз.</p>
+<p class="v7__foot">Құпиясөз есіңізге түсті ме? <a href="{{ url_for('auth.login') }}" data-swap>Кіру</a></p>
+{% endif %}
+{% endblock %}
