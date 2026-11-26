@@ -45,6 +45,26 @@ FARM_TYPES: list[tuple[str, str]] = [
     ("other", "Басқа"),
 ]
 
+CROPS: list[tuple[str, str]] = [
+    ("wheat", "Бидай"),
+    ("barley", "Арпа"),
+    ("flax", "Зығыр"),
+    ("sunflower", "Күнбағыс"),
+    ("pasture", "Жайылым"),
+    ("fallow", "Тыңайған жер"),
+]
+
+# Топырақта көміртегін жинайтын тәжірибелер (Verra VM0042 тізбесінен).
+PRACTICES: list[tuple[str, str]] = [
+    ("notill", "Жыртпай егу (No-till)"),
+    ("cover", "Жамылғы дақылдар"),
+    ("rotation", "Ауыспалы егіс"),
+    ("grazing", "Жайылымды басқару"),
+]
+
+PARCEL_NAME_MAX = 60
+PARCEL_AREA_MAX = 100_000
+
 _REGION_KEYS = {key for key, _ in REGIONS}
 _FARM_TYPE_KEYS = {key for key, _ in FARM_TYPES}
 
@@ -211,4 +231,51 @@ def validate_registration(form: Mapping[str, str]) -> tuple[dict, dict[str, str]
         "farm_type": farm_type,
         "newsletter": form.get("newsletter") == "on",
     }
+    return data, errors
+
+
+_CROP_KEYS = {key for key, _ in CROPS}
+_PRACTICE_KEYS = {key for key, _ in PRACTICES}
+
+PARCEL_MESSAGES = {
+    "name_required": "Алқап атауын жазыңыз",
+    "name_too_long": f"Атау {PARCEL_NAME_MAX} таңбадан аспауы тиіс",
+    "area_required": "Ауданын гектармен енгізіңіз",
+    "area_invalid": "Аудан 0,1-ден 100 000 гектарға дейінгі сан болуы тиіс",
+    "crop_required": "Дақылды таңдаңыз",
+    "practice_required": "Тәжірибені таңдаңыз",
+}
+
+
+def validate_parcel(form: Mapping[str, str]) -> tuple[dict, dict[str, str]]:
+    """Жаңа алқап формасы. Үтірмен жазылған сан да қабылданады (12,5)."""
+    data = {
+        "name": " ".join((form.get("name") or "").split()),
+        "crop": (form.get("crop") or "").strip(),
+        "practice": (form.get("practice") or "").strip(),
+    }
+    errors: dict[str, str] = {}
+
+    if not data["name"]:
+        errors["name"] = PARCEL_MESSAGES["name_required"]
+    elif len(data["name"]) > PARCEL_NAME_MAX:
+        errors["name"] = PARCEL_MESSAGES["name_too_long"]
+
+    raw_area = (form.get("area_ha") or "").strip().replace(" ", "").replace(",", ".")
+    if not raw_area:
+        errors["area_ha"] = PARCEL_MESSAGES["area_required"]
+    else:
+        try:
+            area = round(float(raw_area), 1)
+        except ValueError:
+            area = 0.0
+        if not (0.1 <= area <= PARCEL_AREA_MAX):  # NaN де осы жерде түседі
+            errors["area_ha"] = PARCEL_MESSAGES["area_invalid"]
+        else:
+            data["area_ha"] = area
+
+    if data["crop"] not in _CROP_KEYS:
+        errors["crop"] = PARCEL_MESSAGES["crop_required"]
+    if data["practice"] not in _PRACTICE_KEYS:
+        errors["practice"] = PARCEL_MESSAGES["practice_required"]
     return data, errors

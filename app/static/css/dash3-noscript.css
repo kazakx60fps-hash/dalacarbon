@@ -1,0 +1,6 @@
+/* JavaScript өшірулі болса — бәрі бірден көрінеді. */
+[data-reveal] { opacity: 1 !important; transform: none !important; }
+.d3-view[hidden] { display: grid !important; }
+.ring3__bar { stroke-dasharray: 68 100 !important; }
+.spark__line { stroke-dashoffset: 0 !important; }
+.orbit__item .orbit__face { opacity: 1 !important; scale: 1 !important; }

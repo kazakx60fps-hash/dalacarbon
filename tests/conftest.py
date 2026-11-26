@@ -22,11 +22,11 @@ def app(db_url):
 
     init_schema(db_url)
     with psycopg.connect(db_url, autocommit=True) as conn:
-        conn.execute("TRUNCATE users RESTART IDENTITY")
+        conn.execute("TRUNCATE users RESTART IDENTITY CASCADE")
     # Google кілттері әдейі бос — .env-те шын кілттер болса да тесттер соларға тәуелді емес.
     return create_app({
         "TESTING": True, "SECRET_KEY": "test-secret", "DATABASE_URL": db_url,
-        "GOOGLE_CLIENT_ID": "", "GOOGLE_CLIENT_SECRET": "",
+        "GOOGLE_CLIENT_ID": "", "GOOGLE_CLIENT_SECRET": "", "SENTINEL_HUB_INSTANCE_ID": "",
     })
 
 

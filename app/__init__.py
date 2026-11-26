@@ -86,6 +86,9 @@ def create_app(test_config: dict | None = None) -> Flask:
         GOOGLE_CLIENT_ID=os.environ.get("GOOGLE_CLIENT_ID", ""),
         GOOGLE_CLIENT_SECRET=os.environ.get("GOOGLE_CLIENT_SECRET", ""),
         GOOGLE_REDIRECT_URI=os.environ.get("GOOGLE_REDIRECT_URI", ""),
+        # NDVI картасы: бос болса — NASA MODIS (кілтсіз), толса — Copernicus Sentinel-2 (10 м)
+        SENTINEL_HUB_INSTANCE_ID=os.environ.get("SENTINEL_HUB_INSTANCE_ID", "").strip(),
+        SENTINEL_HUB_LAYER=os.environ.get("SENTINEL_HUB_LAYER", "NDVI").strip() or "NDVI",
     )
     if test_config:
         app.config.update(test_config)
@@ -97,6 +100,16 @@ def create_app(test_config: dict | None = None) -> Flask:
     app.register_blueprint(main_bp)
     init_google(app)
     app.after_request(add_security_headers)
+
+    @app.url_defaults
+    def _static_version(endpoint, values):
+        """CSS/JS өзгерсе, браузер ескі нұсқаны кэштен алмауы үшін ?v=<өзгерген уақыты>."""
+        if endpoint == "static" and "filename" in values:
+            try:
+                values["v"] = int(os.stat(os.path.join(app.static_folder, values["filename"])).st_mtime)
+            except OSError:
+                pass
+
     app.jinja_env.globals.update(
         csrf_token=csrf_token,
         parcel_cells=_parcel_cells(),

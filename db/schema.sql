@@ -36,3 +36,17 @@ CREATE UNIQUE INDEX IF NOT EXISTS users_google_sub_key     ON users (google_sub)
 COMMENT ON TABLE  users               IS 'DalaCarbon AI пайдаланушылары';
 COMMENT ON COLUMN users.password_hash IS 'Argon2id хеші (тұзы ішінде). Ашық құпиясөз ешқашан сақталмайды.';
 COMMENT ON COLUMN users.google_sub    IS 'Google OpenID «sub» — Google арқылы кіру үшін';
+
+-- Фермердің алқаптары (учаскелері): басқару тақтасындағы «Алқап қосу».
+CREATE TABLE IF NOT EXISTS parcels (
+    id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id    BIGINT       NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    name       VARCHAR(60)  NOT NULL,
+    area_ha    NUMERIC(9,1) NOT NULL CHECK (area_ha > 0 AND area_ha <= 100000),
+    crop       VARCHAR(16)  NOT NULL,
+    practice   VARCHAR(16)  NOT NULL,
+    created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS parcels_user_idx ON parcels (user_id, created_at);
+
+COMMENT ON TABLE parcels IS 'Пайдаланушы алқаптары (MRV есебіне кіретін учаскелер)';

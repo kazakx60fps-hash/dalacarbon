@@ -21,6 +21,8 @@ def test_register_page_renders(client):
     assert res.status_code == 200
     assert "DalaCarbon" in html and "Аккаунт ашу" in html
     assert 'type="password"' in html
+    assert 'data-v7' in html and 'id="intro"' in html  # кіру бетімен бірдей макет (спутник + V7)
+    assert 'href="/login" data-swap' in html
     assert "Content-Security-Policy" in res.headers
 
 

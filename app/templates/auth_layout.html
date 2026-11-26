@@ -1,0 +1,59 @@
+{#- Кіру және тіркелу беттерінің ортақ макеті:
+    сол жақта — анимациялы спутник (intro), оң жақта — «V7» шыны картасы (кесілген бұрыштар).
+    Карта кезеңдері (data-phase): hidden → logo → orb → in; ауысқанда: out → logo → orb → келесі бет. -#}
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app2.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth3.css') }}">
+<noscript><link rel="stylesheet" href="{{ url_for('static', filename='css/auth3-noscript.css') }}"></noscript>
+{% endblock %}
+{% block body_class %}is-auth2 is-auth3{% endblock %}
+{% block scene %}<div class="bg-topo" aria-hidden="true"></div>{% endblock %}
+{% block header %}{% endblock %}
+
+{% block main %}
+<div class="auth2 auth3 {% block auth_mod %}{% endblock %}">
+  <section class="auth2__hero">
+    <div class="auth2__bar">
+      <a class="brand-pill" href="{{ url_for('auth.index') }}" aria-label="DalaCarbon AI — басты бет">
+        <img src="{{ url_for('static', filename='img/mark-cream.svg') }}" alt="" width="28" height="28">
+        <span class="brand__name">DalaCarbon <span class="brand__ai">AI</span></span>
+      </a>
+      <button type="button" class="pill-btn" id="intro-toggle" aria-controls="intro">Анимацияны өткізу</button>
+    </div>
+
+    {% include "partials/_intro.html" %}
+
+    <div class="auth2__headline">
+      <span class="auth2__rule" aria-hidden="true"></span>
+      <p class="auth2__title">Алқаптардың<br>көміртегі есебі</p>
+    </div>
+  </section>
+
+  <main class="auth2__side">
+    <section class="v7" data-v7 data-phase="hidden" {% block v7_attrs %}{% endblock %}>
+      <span class="v7__shadow" aria-hidden="true"></span>
+      <span class="v7__frame" aria-hidden="true"></span>
+      <span class="v7__glass" aria-hidden="true"></span>
+      {% for pos in ["tl", "br"] %}
+      <svg class="v7__tab v7__tab--{{ pos }}" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+        {% if loop.first %}<defs><linearGradient id="v7-edge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#BEF0D2" stop-opacity=".7"/><stop offset="1" stop-color="#E0A93B" stop-opacity=".6"/></linearGradient></defs>{% endif %}
+        <path d="M12 .6H39.4L.6 39.4V12A11.4 11.4 0 0 1 12 .6Z"/>
+      </svg>
+      {% endfor %}
+      <span class="v7__logo" aria-hidden="true"><i class="v7__tri v7__tri--a"></i><i class="v7__tri v7__tri--b"></i></span>
+      <span class="v7__orb" aria-hidden="true"></span>
+      <div class="v7__body">
+        {% block card %}{% endblock %}
+      </div>
+    </section>
+  </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% block page_scripts %}{% endblock %}
+<script src="{{ url_for('static', filename='js/intro.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/auth3.js') }}" defer></script>
+{% endblock %}

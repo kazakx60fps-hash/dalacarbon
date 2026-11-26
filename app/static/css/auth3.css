@@ -1,0 +1,146 @@
+/* DalaCarbon AI — кіру/тіркелу «V7» шыны картасы (жасыл шыны, кесілген бұрыштар).
+   Анимация кезеңдері [data-phase]: hidden → logo → orb → in; ауысу: out → logo → orb → келесі бет. */
+
+.auth3 { --cut: 54px; --tab: 40px; --v7-ease: cubic-bezier(.22, 1, .36, 1); --v7-spring: cubic-bezier(.34, 1.56, .64, 1); }
+.auth3.auth2 { grid-template-columns: minmax(0, 1fr) minmax(360px, 480px); }
+.auth3--wide.auth2 { grid-template-columns: minmax(0, 1fr) minmax(360px, 560px); }
+.auth3 .auth2__side { padding: 12px 0; }
+
+/* ── Карта ── */
+.v7 { position: relative; width: 100%; isolation: isolate; color: var(--text); }
+.v7__shadow, .v7__frame, .v7__glass, .v7__tab { position: absolute; pointer-events: none; }
+/* Ескерту: backdrop-filter бар қабаттың ата-анасында filter / clip-path болмауы тиіс —
+   әйтпесе Chrome артындағы фонды бұлдыратпайды. Сондықтан шекара, шыны және көлеңке — бөлек көршілер. */
+.v7__shadow { inset: 24px 14px -14px; z-index: -3; border-radius: 40px; background: rgba(0, 0, 0, .5); filter: blur(34px); transition: opacity .6s; }
+.v7__frame { inset: 0; z-index: -2; border-radius: 22px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  background: linear-gradient(150deg, rgba(190, 240, 210, .45), rgba(120, 190, 150, .12) 40%, rgba(224, 169, 59, .34));
+  transition: opacity .6s var(--v7-ease), transform .7s var(--v7-ease); }
+.v7__glass { inset: 1px; z-index: -1; border-radius: 21px;
+  clip-path: polygon(calc(var(--cut) - .5px) 0, 100% 0, 100% calc(100% - var(--cut) + .5px), calc(100% - var(--cut) + .5px) 100%, 0 100%, 0 calc(var(--cut) - .5px));
+  background:
+    radial-gradient(120% 70% at 85% 0%, rgba(120, 200, 150, .16), transparent 55%),
+    linear-gradient(165deg, rgba(36, 82, 60, .62) 0%, rgba(14, 40, 29, .76) 55%, rgba(8, 26, 19, .84) 100%);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3); backdrop-filter: blur(22px) saturate(1.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+  transition: opacity .6s var(--v7-ease), transform .7s var(--v7-ease); }
+
+/* Бұрыштағы шыны үшбұрыштар (SVG) */
+.v7__tab { width: var(--tab); height: var(--tab); z-index: -1; overflow: visible;
+  transition: opacity .5s var(--v7-ease), transform .6s var(--v7-spring); }
+.v7__tab--tl { left: 0; top: 0; }
+.v7__tab--br { right: 0; bottom: 0; transform: rotate(180deg); }
+.v7__tab path { fill: rgba(22, 60, 43, .78); stroke: url(#v7-edge); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+
+.v7__body { position: relative; display: flex; flex-direction: column; gap: 16px; padding: 40px 38px 34px; }
+
+/* ── Мазмұны ── */
+.v7__head { padding-left: 18px; }
+.v7__head h1 { margin: 0; font-size: clamp(28px, 2.6vw, 36px); line-height: 1.12; font-weight: 700; letter-spacing: -.025em; color: var(--cream); }
+.v7__head h1 em { font-style: normal; color: var(--gold-hi);
+  background: linear-gradient(90deg, #E0A93B, #F6D58E); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.v7__head p { margin: 6px 0 0; font-size: 14px; color: var(--muted); }
+.v7__form { gap: 14px; }
+.v7 .field { gap: 7px; }
+.v7 .field__label { font-size: 13px; font-weight: 600; color: var(--text-2); }
+.v7 .input { height: 48px; border-radius: 12px; background: rgba(3, 18, 12, .52); border: 1px solid rgba(200, 240, 215, .14); color: var(--text);
+  transition: border-color .2s, box-shadow .2s, background .2s; }
+.v7 .input:hover { border-color: rgba(200, 240, 215, .26); }
+.v7 .input:focus { background: rgba(3, 18, 12, .7); border-color: var(--gold); box-shadow: 0 0 0 4px rgba(224, 169, 59, .18); }
+.v7 .input[aria-invalid="true"] { border-color: var(--err); }
+.v7 .input-icon__lead { color: rgba(200, 225, 210, .55); transition: color .2s; }
+.v7 .input-icon:focus-within .input-icon__lead { color: var(--gold); }
+.v7 .select option { background: #0B1F17; }
+.v7 .field__hint { font-size: 12.5px; }
+.v7 .grid-2 { gap: 12px; align-items: start; }
+.v7 .form-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.v7 .form-row .link-btn { font-size: 13px; }
+.v7 .alert { border-radius: 12px; }
+.v7 .notice { margin: 0; }
+
+.v7-check { display: inline-flex; align-items: center; gap: 9px; font-size: 13px; color: #C9D6CE; cursor: pointer; line-height: 1.4; }
+.v7-check input { appearance: none; -webkit-appearance: none; flex: none; width: 18px; height: 18px; margin: 0; border-radius: 5px; cursor: pointer;
+  border: 1.5px solid rgba(200, 240, 215, .35); background: rgba(3, 18, 12, .5); display: grid; place-items: center; transition: background .2s, border-color .2s; }
+.v7-check input::after { content: ""; width: 9px; height: 5px; border: 2px solid var(--ink); border-top: 0; border-right: 0; transform: rotate(-45deg) scale(0); margin-top: -2px; transition: transform .25s var(--v7-spring); }
+.v7-check input:checked { background: var(--gold); border-color: var(--gold); }
+.v7-check input:checked::after { transform: rotate(-45deg) scale(1); }
+.v7-check input:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
+
+.v7-btn { height: 52px; border-radius: 13px; color: var(--ink); font-weight: 700;
+  background: linear-gradient(90deg, #DDA43C 0%, #F3CD7E 100%);
+  box-shadow: 0 14px 30px -12px rgba(224, 169, 59, .85), inset 0 1px 0 rgba(255, 255, 255, .45);
+  transition: transform .3s var(--v7-spring), box-shadow .3s, filter .2s; }
+.v7-btn:hover { color: var(--ink); filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 18px 34px -12px rgba(224, 169, 59, .95), inset 0 1px 0 rgba(255, 255, 255, .5); }
+.v7-btn:active { transform: translateY(0) scale(.985); }
+.v7-btn .btn__arrow { transition: transform .3s var(--v7-spring); }
+.v7-btn:hover .btn__arrow { transform: translateX(3px); }
+.v7-btn.is-loading .btn__arrow { display: none; }
+
+.v7-divider { display: flex; align-items: center; gap: 12px; font-size: 11.5px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--muted-2); }
+.v7-divider::before, .v7-divider::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(200, 240, 215, .2), transparent); }
+.v7-sso { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.v7-sso__btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; height: 46px; border-radius: 12px; cursor: pointer;
+  border: 1px solid rgba(200, 240, 215, .14); background: rgba(3, 18, 12, .38); color: var(--text); font: 600 14px Inter, sans-serif; text-decoration: none;
+  transition: background .2s, border-color .2s, transform .3s var(--v7-spring); }
+.v7-sso__btn:hover { background: rgba(200, 240, 215, .08); border-color: rgba(200, 240, 215, .3); color: var(--text); transform: translateY(-1px); }
+.v7__foot { margin: 0; text-align: center; font-size: 13.5px; color: var(--muted); }
+.v7__foot a { font-weight: 700; text-decoration: none; color: var(--gold-hi); }
+.v7__foot a:hover { text-decoration: underline; }
+.v7__terms { font-size: 12px; text-align: center; }
+.v7-strength { display: grid; gap: 8px; margin-top: -4px; }
+.v7 .rules { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; padding: 0; list-style: none; font-size: 12.5px; }
+
+/* ── Ортадағы логотип: екі шыны үшбұрыш ── */
+.v7__logo { position: absolute; left: 50%; top: 50%; z-index: 3; width: 76px; height: 76px; margin: -38px 0 0 -38px; pointer-events: none;
+  opacity: 0; transform: scale(.6) rotate(-12deg); transition: opacity .45s var(--v7-ease), transform .6s var(--v7-spring); }
+.v7__tri { position: absolute; inset: 0; border-radius: 16px;
+  background: linear-gradient(135deg, rgba(200, 245, 220, .5), rgba(60, 130, 95, .35)); box-shadow: inset 0 0 0 1px rgba(224, 169, 59, .5);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: transform .55s var(--v7-spring), box-shadow .4s; }
+.v7__tri--a { clip-path: polygon(0 0, 100% 0, 0 100%); transform: translate(-9px, -9px); }
+.v7__tri--b { clip-path: polygon(100% 0, 100% 100%, 0 100%); transform: translate(9px, 9px);
+  background: linear-gradient(135deg, rgba(224, 169, 59, .45), rgba(40, 100, 72, .4)); }
+
+/* ── Жарқыраған шар ── */
+.v7__orb { position: absolute; left: 50%; top: 50%; z-index: 4; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, #FFF6D8 0%, #F6D58E 30%, rgba(224, 169, 59, .75) 55%, rgba(224, 169, 59, 0) 72%);
+  box-shadow: 0 0 40px 12px rgba(224, 169, 59, .45); opacity: 0; transform: scale(.2); transition: opacity .4s ease, transform .5s var(--v7-ease); }
+.v7__orb::after { content: ""; position: absolute; inset: -14px; border-radius: 50%; border: 1.5px solid rgba(246, 213, 142, .8); opacity: 0; }
+
+/* ── Кезеңдер ── */
+[data-v7-item] { transition: opacity .5s var(--v7-ease), transform .6s var(--v7-ease), filter .5s var(--v7-ease); transition-delay: calc(var(--i, 0) * 45ms); }
+.v7[data-phase="hidden"] [data-v7-item], .v7[data-phase="logo"] [data-v7-item], .v7[data-phase="orb"] [data-v7-item], .v7[data-phase="out"] [data-v7-item] {
+  opacity: 0; transform: translateY(12px); filter: blur(6px); pointer-events: none; }
+.v7[data-phase="out"] [data-v7-item] { transform: translateY(-8px); transition-duration: .3s; transition-delay: calc(var(--n, 0) * 18ms); }
+.v7[data-phase="hidden"] .v7__frame, .v7[data-phase="hidden"] .v7__glass { opacity: 0; transform: scale(.96); }
+.v7[data-phase="hidden"] .v7__shadow { opacity: 0; }
+.v7[data-phase="hidden"] .v7__tab--tl { opacity: 0; transform: translate(-14px, -14px); }
+.v7[data-phase="hidden"] .v7__tab--br { opacity: 0; transform: translate(14px, 14px) rotate(180deg); }
+.v7[data-phase="logo"] .v7__logo, .v7[data-phase="orb"] .v7__logo { opacity: 1; transform: none; }
+.v7[data-phase="orb"] .v7__tri--a, .v7[data-phase="orb"] .v7__tri--b { transform: none; box-shadow: inset 0 0 0 1px rgba(246, 213, 142, .85), 0 0 26px rgba(224, 169, 59, .35); }
+.v7[data-phase="orb"] .v7__orb { opacity: 1; transform: scale(1); animation: orbPulse 1s ease-in-out infinite alternate; }
+.v7[data-phase="orb"] .v7__orb::after { animation: orbRing .9s ease-out infinite; }
+.v7[data-phase="in"] .v7__orb { opacity: 0; transform: scale(2.4); transition: opacity .55s ease, transform .6s var(--v7-ease); }
+.v7[data-phase="in"] .v7__logo { opacity: 0; transform: scale(1.25); transition: opacity .35s ease, transform .5s var(--v7-ease); }
+@keyframes orbPulse { to { box-shadow: 0 0 60px 20px rgba(224, 169, 59, .55); } }
+@keyframes orbRing { 0% { opacity: .9; transform: scale(.7); } 100% { opacity: 0; transform: scale(1.9); } }
+
+/* ── Телефон ── */
+@media (max-width: 960px) {
+  .auth3.auth2, .auth3--wide.auth2 { grid-template-columns: minmax(0, 1fr); }
+  .auth3 { --cut: 44px; --tab: 32px; }
+  .v7__body { padding: 34px 22px 28px; gap: 14px; }
+}
+@media (max-width: 520px) {
+  /* Жоғарғы жолақ бір жолға сыйсын және спутникке қабаттаспасын */
+  .auth3 .auth2__bar { gap: 8px; }
+  .auth3 .brand-pill { padding-right: 12px; }
+  .auth3 .brand-pill .brand__name { white-space: nowrap; font-size: 16px; }
+  .auth3 .pill-btn { white-space: nowrap; font-size: 12px; padding: 7px 12px; }
+  .auth3 .intro { inset: 84px 0 118px 0; }
+  .v7 .grid-2 { grid-template-columns: minmax(0, 1fr); }
+  .v7-sso { gap: 10px; }
+  .v7__head { padding-left: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v7 *, .v7 *::before, .v7 *::after { transition-duration: .001ms !important; transition-delay: 0ms !important; animation: none !important; }
+}

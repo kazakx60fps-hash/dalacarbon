@@ -34,7 +34,9 @@ def login(client, **form):
 
 def test_login_page_renders(client):
     html = client.get("/login").get_data(as_text=True)
-    assert "Қош келдіңіз!" in html
+    assert 'id="login-title"' in html and "Қош <em>келдіңіз!</em>" in html
+    assert 'data-v7' in html and "js/auth3.js" in html  # V7 шыны картасы + ауысу анимациясы
+    assert 'href="/register" data-swap' in html
     assert 'name="login"' in html and 'type="password"' in html
     assert 'id="intro"' in html and "Анимацияны өткізу" in html  # Figma: анимациялы интро
     assert "Алқаптардың" in html and "Пилоттық алқап" in html

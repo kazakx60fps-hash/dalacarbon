@@ -72,7 +72,9 @@ _CSP = "; ".join(
         "script-src 'self'",
         "style-src 'self' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
-        "img-src 'self' data:",
+        # NDVI картасының тайлдары: Esri спутнигі, OpenStreetMap, NASA GIBS, Copernicus Sentinel Hub
+        "img-src 'self' data: https://server.arcgisonline.com https://tile.openstreetmap.org"
+        " https://gibs.earthdata.nasa.gov https://sh.dataspace.copernicus.eu",
         "form-action 'self'",
         "frame-ancestors 'none'",
         "base-uri 'self'",

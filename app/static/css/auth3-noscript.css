@@ -1,0 +1,7 @@
+/* JavaScript өшірулі болса — карта мен форма бірден көрінеді. */
+.v7[data-phase] [data-v7-item], .v7[data-phase] .v7__body > *, .v7[data-phase] .v7__form > * { opacity: 1 !important; transform: none !important; filter: none !important; pointer-events: auto !important; }
+.v7[data-phase] .v7__frame, .v7[data-phase] .v7__glass, .v7[data-phase] .v7__shadow, .v7[data-phase] .v7__tab { opacity: 1 !important; }
+.v7[data-phase="hidden"] .v7__frame, .v7[data-phase="hidden"] .v7__glass { transform: none !important; }
+.v7[data-phase="hidden"] .v7__tab--tl { transform: none !important; }
+.v7[data-phase="hidden"] .v7__tab--br { transform: rotate(180deg) !important; }
+.v7__logo, .v7__orb { display: none !important; }

@@ -184,6 +184,32 @@ def update_password_hash(conn: psycopg.Connection, user_id: int, password_hash: 
     conn.execute("UPDATE users SET password_hash = %s WHERE id = %s", (password_hash, user_id))
 
 
+_PARCEL_COLUMNS = "id, name, area_ha, crop, practice, created_at"
+
+
+def list_parcels(conn: psycopg.Connection, user_id: int) -> list[dict]:
+    return conn.execute(
+        f"SELECT {_PARCEL_COLUMNS} FROM parcels WHERE user_id = %s ORDER BY created_at, id", (user_id,)
+    ).fetchall()
+
+
+def insert_parcel(conn: psycopg.Connection, user_id: int, data: dict) -> dict:
+    return conn.execute(
+        f"""
+        INSERT INTO parcels (user_id, name, area_ha, crop, practice)
+        VALUES (%(user_id)s, %(name)s, %(area_ha)s, %(crop)s, %(practice)s)
+        RETURNING {_PARCEL_COLUMNS}
+        """,
+        {**data, "user_id": user_id},
+    ).fetchone()
+
+
+def delete_parcel(conn: psycopg.Connection, user_id: int, parcel_id: int) -> bool:
+    """Тек өз алқабын өшіре алады: user_id шарты басқа біреудің жазбасын қорғайды."""
+    cur = conn.execute("DELETE FROM parcels WHERE id = %s AND user_id = %s", (parcel_id, user_id))
+    return cur.rowcount == 1
+
+
 @click.command("init-db")
 def init_db_command() -> None:
     """Дерекқор кестелерін жасау: flask --app run init-db"""
