@@ -4,4 +4,6 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Тек debug: эмулятордан компьютердегі Flask серверіне http://10.0.2.2 (шифрсыз) қосылу -->
+    <application android:usesCleartextTraffic="true" />
 </manifest>

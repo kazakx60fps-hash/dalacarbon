@@ -223,6 +223,34 @@ def complete_password_reset(conn: psycopg.Connection, user_id: int, password_has
         conn.execute("UPDATE password_resets SET used_at = NOW() WHERE user_id = %s AND used_at IS NULL", (user_id,))
 
 
+def create_api_token(conn: psycopg.Connection, user: dict, token_hash: str, days: int, device: str | None) -> None:
+    conn.execute(
+        "INSERT INTO api_tokens (user_id, token_hash, epoch, device, expires_at)"
+        " VALUES (%s, %s, %s, %s, NOW() + make_interval(days => %s))",
+        (user["id"], token_hash, user["session_epoch"], (device or "")[:80] or None, days),
+    )
+
+
+def find_api_token_user(conn: psycopg.Connection, token_hash: str) -> dict | None:
+    """Токен жарамды болса (мерзімі өтпеген, құпиясөз өзгермеген) — оның иесі."""
+    cols = ", ".join(f"u.{c.strip()}" for c in _USER_COLUMNS.split(","))
+    row = conn.execute(
+        f"""
+        UPDATE api_tokens t SET last_used_at = NOW()
+          FROM users u
+         WHERE t.token_hash = %s AND u.id = t.user_id
+           AND t.expires_at > NOW() AND t.epoch = u.session_epoch
+        RETURNING {cols}
+        """,
+        (token_hash,),
+    ).fetchone()
+    return row
+
+
+def delete_api_token(conn: psycopg.Connection, token_hash: str) -> None:
+    conn.execute("DELETE FROM api_tokens WHERE token_hash = %s", (token_hash,))
+
+
 _PARCEL_COLUMNS = "id, name, area_ha, crop, practice, created_at"
 
 

@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- API және NDVI карта тайлдары үшін -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="DalaCarbon AI"
         android:name="${applicationName}"

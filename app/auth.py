@@ -236,6 +236,19 @@ def _no_referrer(response):
     return response
 
 
+def request_password_reset(email: str) -> None:
+    """Email тіркелген болса — бір реттік сілтеме жасап, хат жібереді. Сайт пен мобильді API ортақ.
+    Шақырушы жауапты әрқашан бірдей қайтаруы тиіс (email бар-жоғы білінбейді)."""
+    conn = get_db()
+    user = find_user_by_email(conn, email)
+    if user and not reset_recently_requested(conn, user["id"], RESET_THROTTLE_SECONDS):
+        token = secrets.token_urlsafe(32)
+        ttl = current_app.config["PASSWORD_RESET_TTL_MIN"]
+        create_password_reset(conn, user["id"], _token_hash(token), ttl)
+        link = _external_url("auth.reset_password", token=token)
+        send_mail(user["email"], "DalaCarbon AI — құпиясөзді қалпына келтіру", _reset_email(link, ttl))
+
+
 @bp.route("/forgot", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "GET":
@@ -246,14 +259,7 @@ def forgot_password():
     if error:
         return render_template("forgot.html", email_value=email, error=error), 422
 
-    conn = get_db()
-    user = find_user_by_email(conn, email)
-    if user and not reset_recently_requested(conn, user["id"], RESET_THROTTLE_SECONDS):
-        token = secrets.token_urlsafe(32)
-        ttl = current_app.config["PASSWORD_RESET_TTL_MIN"]
-        create_password_reset(conn, user["id"], _token_hash(token), ttl)
-        link = _external_url("auth.reset_password", token=token)
-        send_mail(user["email"], "DalaCarbon AI — құпиясөзді қалпына келтіру", _reset_email(link, ttl))
+    request_password_reset(email)
 
     # Email бар ма, жоқ па — жауап бірдей (Post/Redirect/Get).
     session["reset_sent_to"] = email

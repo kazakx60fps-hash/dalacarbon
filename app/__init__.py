@@ -23,6 +23,7 @@ from datetime import timedelta  # noqa: E402
 from .auth import bp as auth_bp  # noqa: E402
 from .google_auth import init_google  # noqa: E402
 from .main import bp as main_bp  # noqa: E402
+from .api import bp as api_bp  # noqa: E402
 from .security import add_security_headers, csrf_token  # noqa: E402
 
 _NDVI_RAMP = 6
@@ -108,6 +109,7 @@ def create_app(test_config: dict | None = None) -> Flask:
     db.init_app(app)
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
+    app.register_blueprint(api_bp)  # мобильді қосымша: /api/v1
     init_google(app)
     app.after_request(add_security_headers)
 
@@ -138,6 +140,7 @@ def create_app(test_config: dict | None = None) -> Flask:
 
 
 _ERRORS = {
+    405: ("Әдіс қолданылмайды", "Бұл мекенжай мұндай сұранысты қабылдамайды."),
     400: ("Сұраныс қабылданбады", "Форманың мерзімі өтті немесе деректер бүлінген. Бетті жаңартып, қайта көріңіз."),
     404: ("Бет табылмады", "Мұндай мекенжай жоқ. Сілтемені тексеріңіз."),
     500: ("Сервер қатесі", "Бірдеңе дұрыс болмады. Біраз уақыттан соң қайта көріңіз."),
@@ -145,12 +148,14 @@ _ERRORS = {
 
 
 def _register_error_pages(app: Flask) -> None:
-    from flask import render_template
+    from flask import jsonify, render_template, request
 
     def make_handler(code: int):
         title, message = _ERRORS[code]
 
         def handler(_error):
+            if request.path.startswith("/api/"):  # мобильді қосымшаға — HTML емес, JSON
+                return jsonify(ok=False, error=message), code
             return render_template("error.html", title=title, message=message), code
 
         return handler

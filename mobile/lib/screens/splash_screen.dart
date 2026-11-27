@@ -4,10 +4,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../api/api.dart';
 import '../theme.dart';
 import '../widgets/brand_logo.dart';
 import '../widgets/fade_route.dart';
 import '../widgets/field_scan.dart';
+import 'home_shell.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,18 +29,42 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
   final _timers = <Timer>[];
   bool _left = false;
+  late final Future<bool> _signedIn = _checkSession();
 
   @override
   void initState() {
     super.initState();
+    _signedIn; // анимация жүріп жатқанда сақталған токенді тексереміз
     _timers.add(Timer(const Duration(milliseconds: 1500), () => _brand.forward()));
     _timers.add(Timer(const Duration(milliseconds: 4700), _next));
   }
 
-  void _next() {
+  /// Сақталған токен бар және жарамды ма? (401 болса — өшіреміз; желі қатесі болса — басты бет қайта көреді)
+  Future<bool> _checkSession() async {
+    try {
+      await Api.instance.restore();
+      if (Api.instance.token == null) return false;
+      await Api.instance.me();
+      return true;
+    } on ApiException catch (e) {
+      if (e.status == 401) {
+        await Api.instance.clearToken();
+        return false;
+      }
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _next() async {
     if (_left || !mounted) return;
     _left = true;
-    Navigator.of(context).pushReplacement(fadeRoute(const LoginScreen(), ms: 750));
+    final signedIn = await _signedIn;
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      fadeRoute(signedIn ? const HomeShell() : const LoginScreen(), ms: 750),
+    );
   }
 
   @override

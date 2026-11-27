@@ -9,6 +9,7 @@ from datetime import date, datetime, timedelta
 from flask import Blueprint, Response, abort, current_app, g, jsonify, render_template, request, url_for
 
 from .auth import login_required
+from .demo_content import ACTIVITY, INBOX, NOTIFS
 from .db import delete_parcel, get_db, insert_parcel, list_parcels
 from .security import check_csrf
 from .validators import CROPS, FARM_TYPES, PRACTICES, REGIONS, label_for, validate_parcel
@@ -172,10 +173,8 @@ def _parcel_json(row: dict) -> dict:
     }
 
 
-@bp.get("/dashboard")
-@login_required
-def dashboard():
-    user = g.user
+def dashboard_context(user: dict) -> dict:
+    """Басқару тақтасының барлық деректері — сайттың шаблоны да, мобильді API да осыны қолданады."""
     now = datetime.now()
     today = now.date()
     monday = today - timedelta(days=today.weekday())
@@ -197,8 +196,7 @@ def dashboard():
         "farmerShare": PILOT["farmer_share"],
         "ndvi": _ndvi_config(today, user["region"]),
     }
-    return render_template(
-        "dashboard.html",
+    return dict(
         display_name=display_name,
         initials=_initials(display_name),
         user=user,
@@ -216,8 +214,17 @@ def dashboard():
         parcels=parcels,
         crops=CROPS,
         practices=PRACTICES,
+        inbox=INBOX,
+        notifs=NOTIFS,
+        activity=ACTIVITY,
         data=data,
     )
+
+
+@bp.get("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html", **dashboard_context(g.user))
 
 
 @bp.post("/dashboard/parcels")
@@ -240,16 +247,14 @@ def remove_parcel(parcel_id: int):
     return jsonify(ok=True)
 
 
-@bp.get("/dashboard/report.csv")
-@login_required
-def report_csv():
-    """Excel дұрыс ашуы үшін UTF-8 BOM және «;» бөлгіші."""
+def build_report_csv(user: dict) -> tuple[str, str]:
+    """(файл атауы, мәтін). Excel дұрыс ашуы үшін UTF-8 BOM және «;» бөлгіші."""
     today = date.today()
     n = _pilot_numbers()
     buf = io.StringIO()
     w = csv.writer(buf, delimiter=";")
     w.writerow(["DalaCarbon AI — MRV есебі", today.isoformat()])
-    w.writerow(["Шаруашылық", g.user["full_name"] or g.user["username"], label_for(REGIONS, g.user["region"])])
+    w.writerow(["Шаруашылық", user["full_name"] or user["username"], label_for(REGIONS, user["region"])])
     w.writerow([])
     w.writerow(["Пилоттық сценарий (демо)", "Мәні"])
     w.writerow(["Алаң, га", PILOT["area_ha"]])
@@ -262,11 +267,19 @@ def report_csv():
         w.writerow([point["label"], point["measured"], point["forecast"]])
     w.writerow([])
     w.writerow(["Менің алқаптарым", "Аудан, га", "Дақыл", "Тәжірибе", "Секвестрация, т CO₂e/жыл", "Фермер табысы, $"])
-    for p in (_parcel_json(r) for r in list_parcels(get_db(), g.user["id"])):
+    for p in (_parcel_json(r) for r in list_parcels(get_db(), user["id"])):
         w.writerow([p["name"], str(p["area_ha"]).replace(".", ","), p["crop"], p["practice"],
                     str(p["tonnes"]).replace(".", ","), p["farmer_usd"]])
-    return Response(
-        "﻿" + buf.getvalue(),
-        mimetype="text/csv",
-        headers={"Content-Disposition": f'attachment; filename="dalacarbon-report-{today.isoformat()}.csv"'},
-    )
+    return f"dalacarbon-report-{today.isoformat()}.csv", "\ufeff" + buf.getvalue()
+
+
+def csv_response(user: dict) -> Response:
+    filename, text = build_report_csv(user)
+    return Response(text, mimetype="text/csv",
+                    headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+
+
+@bp.get("/dashboard/report.csv")
+@login_required
+def report_csv():
+    return csv_response(g.user)

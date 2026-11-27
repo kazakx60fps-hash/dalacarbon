@@ -66,3 +66,19 @@ CREATE TABLE IF NOT EXISTS password_resets (
 CREATE INDEX IF NOT EXISTS password_resets_user_idx ON password_resets (user_id, created_at);
 
 COMMENT ON TABLE password_resets IS 'Құпиясөзді қалпына келтіру сілтемелері (токен хеші, мерзімі, қолданылғаны)';
+
+-- Мобильді қосымшаның кіру токендері. Токеннің өзі емес, тек SHA-256 хеші сақталады.
+-- epoch ≠ users.session_epoch болса (құпиясөз қалпына келтірілсе) — токен жарамсыз.
+CREATE TABLE IF NOT EXISTS api_tokens (
+    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id      BIGINT      NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    token_hash   CHAR(64)    NOT NULL UNIQUE,
+    epoch        INTEGER     NOT NULL,
+    device       VARCHAR(80),
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    last_used_at TIMESTAMPTZ,
+    expires_at   TIMESTAMPTZ NOT NULL
+);
+CREATE INDEX IF NOT EXISTS api_tokens_user_idx ON api_tokens (user_id);
+
+COMMENT ON TABLE api_tokens IS 'Мобильді қосымшаның Bearer токендері (хеш, мерзімі, сессия дәуірі)';
