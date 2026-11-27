@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Flutter жүктелгенше көрінетін экран: қосымшаның фоны + ортада логотип -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/dc_paper" />
+    <item android:drawable="@drawable/ic_launcher_foreground" android:gravity="center" />
+</layer-list>

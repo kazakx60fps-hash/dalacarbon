@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DalaCarbon AI логотипі (сайттағы mark-color.svg, viewBox 0 0 120 120), adaptive icon-ның дөңгелек маскаға (радиус 33) толық сыйғызылған. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.48"
+        android:scaleY="0.48"
+        android:translateX="24.24"
+        android:translateY="25.2">
+        <!-- «D»: тік жиек + жарты шеңбер -->
+        <clip-path android:pathData="M16,12 H60 A48,48 0 0 1 60,108 H16 Z" />
+        <!-- Жоғарғы бөлік, жапырақ тесігімен (тек 0..60 жолағында) -->
+        <group>
+            <clip-path android:pathData="M0,0 H120 V60 H0 Z" />
+            <path
+                android:fillColor="#0F4C3A"
+                android:fillType="evenOdd"
+                android:pathData="M0,0 H120 V60 H0 Z M38,62 C40,41 56,27 84,23 C82,44 50,50 38,62 Z" />
+        </group>
+        <!-- Жер қабаттары және алтын жолақ -->
+        <path android:fillColor="#0F4C3A" android:pathData="M0,64 H120 V76 H0 Z" />
+        <path android:fillColor="#0F4C3A" android:pathData="M0,80 H120 V89 H0 Z" />
+        <path android:fillColor="#0F4C3A" android:pathData="M0,93 H120 V99 H0 Z" />
+        <path android:fillColor="#E0A93B" android:pathData="M0,103 H120 V108 H0 Z" />
+    </group>
+</vector>
